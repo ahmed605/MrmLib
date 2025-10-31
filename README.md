@@ -50,6 +50,7 @@ foreach (var candidate in priFile.ResourceCandidates)
         Console.Write($", String Value: {data}");
     }
 
+    Console.Write($", Qualifiers Count: {candidate.Qualifiers.Count}");
     Console.WriteLine($", Value as System.Object: {candidate.Value}");
 }
 ```
