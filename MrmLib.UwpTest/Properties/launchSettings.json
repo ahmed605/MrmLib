@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MrmLib.UwpTest": {
+      "commandName": "MsixPackage",
+      "nativeDebugging": true
+    }
+  }
+}

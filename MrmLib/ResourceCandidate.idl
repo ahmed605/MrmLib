@@ -1,0 +1,23 @@
+namespace MrmLib
+{
+    enum ResourceValueType
+    {
+        String,
+        Path,
+        EmbeddedData
+    };
+
+    runtimeclass ResourceCandidate
+    {
+        [interface_name("IResourceCandidate", 0E1518AA-11DC-4B4D-B9BD-0950F7E6CF77)]
+        {
+            String ResourceName { get; };
+            ResourceValueType ValueType { get; };
+            Object Value { get; };
+            String StringValue { get; };
+            UInt8[] DataValue { get; };
+        }
+
+        // TODO: Qualifiers
+    }
+}

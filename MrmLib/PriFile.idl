@@ -1,0 +1,55 @@
+import "ResourceCandidate.idl";
+
+namespace MrmLib
+{
+    runtimeclass ReplacePathCandidatesWithEmbeddedDataResult
+    {
+        [interface_name("IReplacePathCandidatesWithEmbeddedDataResult", E4E95D99-E242-44AB-8AF8-9CCCC5C4FBF1)]
+        {
+            IVectorView<ResourceCandidate> CandidatesReplaced { get; };
+        }
+    }
+
+    runtimeclass PriFile
+    {
+        [static_name("IPriFileStatics", CE68A109-67EE-4B84-8823-32413732A4F3)]
+        {
+            [default_overload]
+            static Windows.Foundation.IAsyncOperation<PriFile> LoadAsync(UInt8[] priBytes);
+
+            [method_name("LoadAsyncWithPath")]
+            static Windows.Foundation.IAsyncOperation<PriFile> LoadAsync(String priFilePath);
+
+            [method_name("LoadAsyncWithStorageFile")]
+            static Windows.Foundation.IAsyncOperation<PriFile> LoadAsync(Windows.Storage.StorageFile priFile);
+        }
+
+        [interface_name("IPriFile", B2C08FB5-B44A-4A5D-83C0-EF07945C9CAC)]
+        {
+            IVectorView<ResourceCandidate> ResourceCandidates { get; };
+
+            [default_overload]
+            void ReplaceCandidateValue(ResourceCandidate resourceCandidate, String value);
+            [method_name("ReplaceCandidateValueWithValueType")]
+            void ReplaceCandidateValue(ResourceCandidate resourceCandidate, ResourceValueType valueType, String value);
+            [method_name("ReplaceCandidateValueWithDataBytes")]
+            void ReplaceCandidateValue(ResourceCandidate resourceCandidate, UInt8[] value);
+
+            [default_overload]
+            Windows.Foundation.IAsyncOperation<ReplacePathCandidatesWithEmbeddedDataResult>
+                ReplacePathCandidatesWithEmbeddedDataAsync(Windows.Storage.StorageFolder sourceFolderToEmbed);
+
+            [method_name("ReplacePathCandidatesWithEmbeddedDataAsyncWithPath")]
+            Windows.Foundation.IAsyncOperation<ReplacePathCandidatesWithEmbeddedDataResult>
+                ReplacePathCandidatesWithEmbeddedDataAsync(String sourceFolderPathToEmbed);
+
+			UInt8[] Write();
+            [method_name("WriteAsyncWithPath")]
+            Windows.Foundation.IAsyncAction WriteAsync(String destinationFilePath);
+            [default_overload]
+            Windows.Foundation.IAsyncAction WriteAsync(Windows.Storage.StorageFile destinationFile);
+			[method_name("WriteAsyncWithStream")]
+            Windows.Foundation.IAsyncAction WriteAsync(Windows.Storage.Streams.IOutputStream destinationStream);
+        }
+    }
+}
