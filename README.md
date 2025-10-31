@@ -38,6 +38,7 @@ var priFile = await PriFile.LoadAsync(...);
 foreach (var candidate in priFile.ResourceCandidates)
 {
     Console.Write($"Resource Name: {candidate.ResourceName}, Resource Type: {candidate.ValueType}");
+    
     if (candidate.ValueType == ResourceValueType.EmbeddedData)
     {
         byte[] data = candidate.DataValue
