@@ -1,6 +1,5 @@
 #pragma once
 #include "ReplacePathCandidatesWithEmbeddedDataResult.g.h"
-#include <winrt/Windows.Foundation.Collections.h>
 
 namespace winrt::MrmLib::implementation
 {

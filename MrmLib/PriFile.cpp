@@ -110,15 +110,18 @@ namespace winrt::MrmLib::implementation
 
     void PriFile::ReplaceCandidateValue(winrt::MrmLib::ResourceCandidate const& resourceCandidate, hstring const& value)
     {
-        ReplaceCandidateValue(resourceCandidate, ResourceValueType::String, value);
+        auto originalType = resourceCandidate.ValueType();
+        ReplaceCandidateValue(resourceCandidate,
+                              originalType != ResourceValueType::EmbeddedData ? originalType : ResourceValueType::String,
+                              value);
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::ReplacePathCandidatesWithEmbeddedDataResult> PriFile::ReplacePathCandidatesWithEmbeddedDataAsync(winrt::Windows::Storage::StorageFolder sourceFolderToEmbed)
     {
         co_await winrt::resume_background();
 
-		auto folderName = sourceFolderToEmbed.Name() + L"\\";
-		auto folderNameSize = folderName.size();
+        auto folderName = sourceFolderToEmbed.Name() + L"\\";
+        auto folderNameSize = folderName.size();
 
         std::vector<winrt::MrmLib::ResourceCandidate> replacedCandidates;
         for (auto candidate : m_resourceCandidates)
@@ -129,7 +132,7 @@ namespace winrt::MrmLib::implementation
 
                 if (path.starts_with(folderName))
                 {
-					std::wstring_view name_view = path.data() + folderNameSize;
+                    std::wstring_view name_view = path.data() + folderNameSize;
 
                     if (auto const& item = co_await sourceFolderToEmbed.TryGetItemAsync(name_view))
                     {
@@ -258,8 +261,8 @@ namespace winrt::MrmLib::implementation
             }
         }
 
-		void* priFileContents = nullptr;
-		uint32_t priFileContentsSize = 0;
+        void* priFileContents = nullptr;
+        uint32_t priFileContentsSize = 0;
         check_hresult(priFileBuilder->GetFileContentsRef(&priFileContents, &priFileContentsSize));
 
         return { (uint8_t*)priFileContents, (uint8_t*)priFileContents + priFileContentsSize };
