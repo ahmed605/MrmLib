@@ -32,6 +32,7 @@ namespace MrmLib.UwpTest
                 var type = resources[0].ValueType;
                 var value = resources[0].Value;
                 var data = resources[0].DataValue;
+                var qualifiers = resources[0].Qualifiers;
 
                 var folderPicker = new FolderPicker();
                 folderPicker.FileTypeFilter.Add("*");

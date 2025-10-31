@@ -15,6 +15,7 @@
     <ClCompile Include="PriFile.cpp" />
     <ClCompile Include="ReplacePathCandidatesWithEmbeddedDataResult.cpp" />
     <ClCompile Include="ResourceCandidate.cpp" />
+    <ClCompile Include="Qualifier.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -22,6 +23,7 @@
     <ClInclude Include="ReplacePathCandidatesWithEmbeddedDataResult.h" />
     <ClInclude Include="ResourceCandidate.h" />
     <ClInclude Include="namespaces.h" />
+    <ClInclude Include="Qualifier.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MrmLib.def" />
@@ -33,6 +35,7 @@
   <ItemGroup>
     <Midl Include="ResourceCandidate.idl" />
     <Midl Include="PriFile.idl" />
+    <Midl Include="Qualifier.idl" />
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="$(MSBuildThisFileDirectory)..\..\natvis\wil.natvis" />

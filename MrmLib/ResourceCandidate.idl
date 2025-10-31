@@ -1,3 +1,5 @@
+import "Qualifier.idl";
+
 namespace MrmLib
 {
     enum ResourceValueType
@@ -16,8 +18,7 @@ namespace MrmLib
             Object Value { get; };
             String StringValue { get; };
             UInt8[] DataValue { get; };
+            IVectorView<Qualifier> Qualifiers { get; };
         }
-
-        // TODO: Qualifiers
     }
 }

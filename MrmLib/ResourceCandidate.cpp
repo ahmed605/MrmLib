@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ResourceCandidate.h"
 #include "ResourceCandidate.g.cpp"
+#include <Qualifier.h>
 
 namespace winrt::MrmLib::implementation
 {
@@ -38,8 +39,24 @@ namespace winrt::MrmLib::implementation
             check_bool(Candidate.TryGetStringValue(&data));
 
             auto result = data.GetStringResult();
-            m_stringValue = hstring(result->pRef, result->cchBuf - 1);
+            m_stringValue = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
         }
+
+        std::vector<winrt::MrmLib::Qualifier> qualifiers;
+
+        mrm::QualifierSetResult result;
+        check_hresult(Candidate.GetQualifiers(&result));
+
+        auto count = result.GetNumQualifiers();
+        for (int i = 0; i < count; i++)
+        {
+			mrm::QualifierResult qualifierResult;
+			check_hresult(result.GetQualifier(i, &qualifierResult));
+
+            qualifiers.push_back(make<implementation::Qualifier>(std::move(qualifierResult)));
+        }
+
+		m_qualifiers = winrt::single_threaded_vector<winrt::MrmLib::Qualifier>(std::move(qualifiers)).GetView();
     }
 
     hstring ResourceCandidate::ResourceName()
@@ -88,6 +105,11 @@ namespace winrt::MrmLib::implementation
         }
 
         return { };
+    }
+
+    IVectorView<winrt::MrmLib::Qualifier> ResourceCandidate::Qualifiers()
+    {
+        return m_qualifiers;
     }
 
     void ResourceCandidate::ReplaceValue(hstring const& stringValue, ResourceValueType valueType)

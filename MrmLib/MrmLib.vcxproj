@@ -177,6 +177,7 @@
     <ClInclude Include="namespaces.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PriFile.h" />
+    <ClInclude Include="Qualifier.h" />
     <ClInclude Include="ReplacePathCandidatesWithEmbeddedDataResult.h" />
     <ClInclude Include="ResourceCandidate.h" />
   </ItemGroup>
@@ -186,6 +187,7 @@
     </ClCompile>
     <ClCompile Include="$(GeneratedFilesDir)module.g.cpp" />
     <ClCompile Include="PriFile.cpp" />
+    <ClCompile Include="Qualifier.cpp" />
     <ClCompile Include="ReplacePathCandidatesWithEmbeddedDataResult.cpp" />
     <ClCompile Include="ResourceCandidate.cpp" />
   </ItemGroup>
@@ -198,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <Midl Include="PriFile.idl" />
+    <Midl Include="Qualifier.idl" />
     <Midl Include="ResourceCandidate.idl" />
   </ItemGroup>
   <ItemGroup>

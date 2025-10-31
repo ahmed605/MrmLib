@@ -17,6 +17,8 @@
 
 namespace winrt::MrmLib::implementation
 {
+	using namespace ::winrt::Windows::Foundation::Collections;
+
     struct ResourceCandidate : ResourceCandidateT<ResourceCandidate>
     {
     private:
@@ -32,6 +34,8 @@ namespace winrt::MrmLib::implementation
         array_view<uint8_t const> m_dataValue;
         ResourceValueType m_valueType = NullValueType;
 
+        IVectorView<winrt::MrmLib::Qualifier> m_qualifiers { nullptr };
+
     public:
         mrm::ResourceCandidateResult Candidate;
 
@@ -43,6 +47,7 @@ namespace winrt::MrmLib::implementation
         winrt::Windows::Foundation::IInspectable Value();
         hstring StringValue();
         com_array<uint8_t> DataValue();
+        IVectorView<winrt::MrmLib::Qualifier> Qualifiers();
 
 		void ReplaceValue(hstring const& stringValue, winrt::MrmLib::ResourceValueType valueType);
 		void ReplaceValue(array_view<uint8_t const>& dataValue);

@@ -1,0 +1,58 @@
+namespace MrmLib
+{
+    enum QualifierAttribute
+    {
+        LanguageList = 0,
+        Contrast = 1,
+        Scale = 2,
+        RegionId = 3,
+        TargetSize = 4,
+        LayoutDirection = 5,
+        Theme = 6,
+        AlternateForm = 7,
+        DXFeatureLevel = 8,
+        Configuration = 9,
+        DeviceFamily = 10,
+        CustomQualifier = 11
+    };
+
+    enum QualifierOperator
+    {
+        False = 0,
+        True = 1,
+        AttributeDefined = 2,
+        AttributeUndefined = 3,
+        NotEqual = 4,
+        NoMatch = 5,
+        Less = 6,
+        LessOrEqual = 7,
+        Greater = 8,
+        GreaterOrEqual = 9,
+        Match = 10,
+        Equal = 11,
+        ExtendedOperator = 12,
+        Custom = 13
+    };
+
+    enum QualifierValueType
+    {
+        String = 0,
+        Attribute = 1
+    };
+
+    runtimeclass Qualifier
+    {
+        [interface_name("IQualifier", D22E530A-5BB0-4F27-A2BF-2B0A3D6A941A)]
+        {
+            QualifierAttribute Attribute { get; };
+            QualifierOperator Operator { get; };
+            UInt64 CustomOperator { get; };
+            QualifierValueType ValueType { get; };
+            String StringValue { get; };
+            UInt32 AttributeValue { get; };
+            Object Value { get; };
+            Int32 Priority { get; };
+            Double FallbackScore { get; };
+        }
+    };
+}
