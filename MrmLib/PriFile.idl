@@ -26,14 +26,7 @@ namespace MrmLib
 
         [interface_name("IPriFile", B2C08FB5-B44A-4A5D-83C0-EF07945C9CAC)]
         {
-            IVectorView<ResourceCandidate> ResourceCandidates { get; };
-
-            [default_overload]
-            void ReplaceCandidateValue(ResourceCandidate resourceCandidate, String value);
-            [method_name("ReplaceCandidateValueWithValueType")]
-            void ReplaceCandidateValue(ResourceCandidate resourceCandidate, ResourceValueType valueType, String value);
-            [method_name("ReplaceCandidateValueWithDataBytes")]
-            void ReplaceCandidateValue(ResourceCandidate resourceCandidate, UInt8[] value);
+            IVector<ResourceCandidate> ResourceCandidates { get; };
 
             [default_overload]
             Windows.Foundation.IAsyncOperation<ReplacePathCandidatesWithEmbeddedDataResult>

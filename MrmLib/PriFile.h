@@ -23,7 +23,7 @@ namespace winrt::MrmLib::implementation
 
 		com_array<uint8_t> m_priFileBytes;
 		std::unique_ptr<mrm::StandalonePriFile> m_priFile;
-        IVectorView<winrt::MrmLib::ResourceCandidate> m_resourceCandidates { nullptr };
+        IVector<winrt::MrmLib::ResourceCandidate> m_resourceCandidates { nullptr };
 
     public:
         PriFile() = default;
@@ -33,11 +33,7 @@ namespace winrt::MrmLib::implementation
         static winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> LoadAsync(hstring priFilePath);
         static winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> LoadAsync(winrt::Windows::Storage::StorageFile priFile);
 
-        winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::ResourceCandidate> ResourceCandidates();
-
-        void ReplaceCandidateValue(winrt::MrmLib::ResourceCandidate const& resourceCandidate, hstring const& value);
-        void ReplaceCandidateValue(winrt::MrmLib::ResourceCandidate const& resourceCandidate, winrt::MrmLib::ResourceValueType const& valueType, hstring const& value);
-        void ReplaceCandidateValue(winrt::MrmLib::ResourceCandidate const& resourceCandidate, array_view<uint8_t const> value);
+        winrt::Windows::Foundation::Collections::IVector<winrt::MrmLib::ResourceCandidate> ResourceCandidates();
 
         winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::ReplacePathCandidatesWithEmbeddedDataResult> ReplacePathCandidatesWithEmbeddedDataAsync(winrt::Windows::Storage::StorageFolder sourceFolderToEmbed);
         winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::ReplacePathCandidatesWithEmbeddedDataResult> ReplacePathCandidatesWithEmbeddedDataAsync(hstring sourceFolderPathToEmbed);

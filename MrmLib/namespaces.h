@@ -1,6 +1,7 @@
 #pragma once
 
 #include <build/MrmBuilders.h>
+#include <Platform/MrmConstants.h>
 
 namespace mrm
 {

@@ -50,18 +50,57 @@ namespace winrt::MrmLib::implementation
         auto count = result.GetNumQualifiers();
         for (int i = 0; i < count; i++)
         {
-			mrm::QualifierResult qualifierResult;
-			check_hresult(result.GetQualifier(i, &qualifierResult));
+            mrm::QualifierResult qualifierResult;
+            check_hresult(result.GetQualifier(i, &qualifierResult));
 
             qualifiers.push_back(make<implementation::Qualifier>(std::move(qualifierResult)));
         }
 
-		m_qualifiers = winrt::single_threaded_vector<winrt::MrmLib::Qualifier>(std::move(qualifiers)).GetView();
+        m_qualifiers = winrt::single_threaded_vector<winrt::MrmLib::Qualifier>(std::move(qualifiers)).GetView();
+    }
+
+    ResourceCandidate::ResourceCandidate(hstring const& resourceName, ResourceValueType const& valueType, hstring const& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers)
+    {
+		m_resourceName = resourceName;
+		SetValue(valueType, value);
+		Qualifiers(qualifiers);
+    }
+
+    ResourceCandidate::ResourceCandidate(hstring const& resourceName, array_view<uint8_t const>& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers)
+    {
+		m_resourceName = resourceName;
+		SetValue(value);
+		Qualifiers(qualifiers);
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue)
+    {
+		return winrt::make<implementation::ResourceCandidate>(resourceName, valueType, stringValue, nullptr);
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue, array_view<winrt::MrmLib::Qualifier const> qualifiers)
+    {
+        return winrt::make<implementation::ResourceCandidate>(resourceName, valueType, stringValue, single_threaded_vector(std::move(std::vector<MrmLib::Qualifier>(qualifiers.begin(), qualifiers.end()))).GetView());
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, array_view<uint8_t const> dataValue)
+    {
+        return winrt::make<implementation::ResourceCandidate>(resourceName, dataValue, nullptr);
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, array_view<uint8_t const> dataValue, array_view<winrt::MrmLib::Qualifier const> qualifiers)
+    {
+        return winrt::make<implementation::ResourceCandidate>(resourceName, dataValue, single_threaded_vector(std::move(std::vector<MrmLib::Qualifier>(qualifiers.begin(), qualifiers.end()))).GetView());
     }
 
     hstring ResourceCandidate::ResourceName()
     {
         return m_resourceName;
+    }
+
+    void ResourceCandidate::ResourceName(hstring const& value)
+    {
+        m_resourceName = value;
     }
 
     winrt::MrmLib::ResourceValueType ResourceCandidate::ValueType()
@@ -72,6 +111,16 @@ namespace winrt::MrmLib::implementation
         }
 
         return m_valueType;
+    }
+
+    void ResourceCandidate::ValueType(winrt::MrmLib::ResourceValueType const& value)
+    {
+        if (value == ResourceValueType::EmbeddedData && !m_replacementDataValue.size()) [[unlikely]]
+        {
+			throw hresult_invalid_argument(L"ValueType cannot be set to EmbeddedData without setting DataValue first.");
+        }
+
+		m_replacementValueType = value;
     }
 
     IInspectable ResourceCandidate::Value()
@@ -96,6 +145,11 @@ namespace winrt::MrmLib::implementation
         return L"";
     }
 
+    void ResourceCandidate::StringValue(hstring const& value)
+    {
+        SetValue(value);
+    }
+
     com_array<uint8_t> ResourceCandidate::DataValue()
     {
         if (ValueType() == ResourceValueType::EmbeddedData)
@@ -107,18 +161,36 @@ namespace winrt::MrmLib::implementation
         return { };
     }
 
+    void ResourceCandidate::DataValue(array_view<uint8_t const> value)
+    {
+        SetValue(value);
+    }
+
     IVectorView<winrt::MrmLib::Qualifier> ResourceCandidate::Qualifiers()
     {
         return m_qualifiers;
     }
 
-    void ResourceCandidate::ReplaceValue(hstring const& stringValue, ResourceValueType valueType)
+    void ResourceCandidate::Qualifiers(winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& value)
+    {
+        m_qualifiers = value ? value : single_threaded_vector<MrmLib::Qualifier>().GetView();
+        HasCustomQualifiers = true;
+    }
+
+    void ResourceCandidate::SetValue(ResourceValueType const& valueType, hstring const& stringValue)
     {
         m_replacementStringValue = stringValue;
         m_replacementValueType = valueType;
     }
 
-    void ResourceCandidate::ReplaceValue(array_view<uint8_t const>& dataValue)
+    void ResourceCandidate::SetValue(hstring const& stringValue)
+    {
+        auto originalType = ValueType();
+        m_replacementStringValue = stringValue;
+        m_replacementValueType = originalType != ResourceValueType::EmbeddedData ? originalType : ResourceValueType::String;
+    }
+
+    void ResourceCandidate::SetValue(array_view<uint8_t const> dataValue)
     {
         m_replacementDataValue = { dataValue.begin(), dataValue.end() };
         m_replacementValueType = ResourceValueType::EmbeddedData;

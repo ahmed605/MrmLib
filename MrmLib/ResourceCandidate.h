@@ -38,19 +38,38 @@ namespace winrt::MrmLib::implementation
 
     public:
         mrm::ResourceCandidateResult Candidate;
+		bool HasCustomQualifiers = false;
 
         ResourceCandidate() = default;
         ResourceCandidate(hstring&& resourceName, mrm::ResourceCandidateResult&& candidate);
+        ResourceCandidate(hstring const& resourceName, ResourceValueType const& valueType, hstring const& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers);
+        ResourceCandidate(hstring const& resourceName, array_view<uint8_t const>& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers);
+
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue, array_view<winrt::MrmLib::Qualifier const> qualifiers);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, array_view<uint8_t const> dataValue);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, array_view<uint8_t const> dataValue, array_view<winrt::MrmLib::Qualifier const> qualifiers);
 
         hstring ResourceName();
-        winrt::MrmLib::ResourceValueType ValueType();
-        winrt::Windows::Foundation::IInspectable Value();
-        hstring StringValue();
-        com_array<uint8_t> DataValue();
-        IVectorView<winrt::MrmLib::Qualifier> Qualifiers();
+        void ResourceName(hstring const& value);
 
-		void ReplaceValue(hstring const& stringValue, winrt::MrmLib::ResourceValueType valueType);
-		void ReplaceValue(array_view<uint8_t const>& dataValue);
+        winrt::MrmLib::ResourceValueType ValueType();
+        void ValueType(winrt::MrmLib::ResourceValueType const& value);
+
+        winrt::Windows::Foundation::IInspectable Value();
+
+        hstring StringValue();
+        void StringValue(hstring const& value);
+
+        com_array<uint8_t> DataValue();
+        void DataValue(array_view<uint8_t const> value);
+
+        IVectorView<winrt::MrmLib::Qualifier> Qualifiers();
+        void Qualifiers(winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& value);
+
+        void SetValue(hstring const& value);
+        void SetValue(winrt::MrmLib::ResourceValueType const& valueType, hstring const& value);
+        void SetValue(array_view<uint8_t const> value);
 
         inline bool HasReplacementValue() const
         {
@@ -66,5 +85,12 @@ namespace winrt::MrmLib::implementation
         {
             return &m_replacementDataValue;
         }
+    };
+}
+
+namespace winrt::MrmLib::factory_implementation
+{
+    struct ResourceCandidate : ResourceCandidateT<ResourceCandidate, implementation::ResourceCandidate>
+    {
     };
 }

@@ -62,20 +62,24 @@ using MrmLib;
 ...
 
 var priFile = await PriFile.LoadAsync(...);
-var candidate = ...;
+var candidate = priFile.ResourceCandidates[0];
 
 
-priFile.ReplaceCandidateValue(candidate, "New String Value");
+candidate.SetValue("New String Value");
 
 
-priFile.ReplaceCandidateValue(candidate, "Assets\\NewFilePath.png");
+candidate.SetValue(candidate, "Assets\\NewFilePath.png");
 
 
-priFile.ReplaceCandidateValue(candidate, ResourceValueType.Path, "Assets\\NewFilePath.png");
+candidate.SetValue(candidate, ResourceValueType.Path, "Assets\\NewFilePath.png");
 
 
 byte[] newData = ...;
-priFile.ReplaceCandidateValue(candidate, newData);
+candidate.SetValue(candidate, newData);
+
+
+candidate.StringValue = "Another Way To Set a New String Value";
+candidate.ValueType = ResourceValueType.String;
 
 
 StorageFolder assetsFolder = ...;

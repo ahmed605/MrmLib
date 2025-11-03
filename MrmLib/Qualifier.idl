@@ -42,14 +42,30 @@ namespace MrmLib
 
     runtimeclass Qualifier
     {
+        [static_name("IQualifierStatics", B8ADFE39-1159-4EAF-8BFE-E6DA5BB4C55F)]
+        {
+            static Qualifier Create(QualifierAttribute qualifierAttribute, QualifierOperator qualifierOperator, String qualifierValue, Int32 priority, Double fallbackScore);
+            [default_overload]
+            static Qualifier Create(QualifierAttribute qualifierAttribute, QualifierOperator qualifierOperator, String qualifierValue, Double fallbackScore);
+            [default_overload]
+            static Qualifier Create(QualifierAttribute qualifierAttribute, QualifierOperator qualifierOperator, String qualifierValue);
+            [method_name("CreateQualifierWithMatchOperator")]
+            static Qualifier Create(QualifierAttribute qualifierAttribute, String qualifierValue, Int32 priority, Double fallbackScore);
+            [method_name("CreateQualifierWithMatchOperatorAndDefaultPriority")]
+            static Qualifier Create(QualifierAttribute qualifierAttribute, String qualifierValue, Double fallbackScore);
+            static Qualifier Create(QualifierAttribute qualifierAttribute, String qualifierValue);
+        }
+
         [interface_name("IQualifier", D22E530A-5BB0-4F27-A2BF-2B0A3D6A941A)]
         {
             QualifierAttribute Attribute { get; };
+            String AttributeName { get; };
+            String AttributeTypeName { get; };
             QualifierOperator Operator { get; };
             UInt64 CustomOperator { get; };
             QualifierValueType ValueType { get; };
             String StringValue { get; };
-            UInt32 AttributeValue { get; };
+            QualifierAttribute AttributeValue { get; };
             Object Value { get; };
             Int32 Priority { get; };
             Double FallbackScore { get; };

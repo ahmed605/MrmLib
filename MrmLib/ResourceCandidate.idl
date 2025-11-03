@@ -11,14 +11,33 @@ namespace MrmLib
 
     runtimeclass ResourceCandidate
     {
+        [static_name("IResourceCandidateStatics", 3B673525-80B9-48D7-B959-DDEE14C2DDE1)]
+        {
+            [default_overload]
+            static ResourceCandidate Create(String resourceName, ResourceValueType valueType, String stringValue);
+            [method_name("CreateResourceCandidateWithQualifiers")]
+            static ResourceCandidate Create(String resourceName, ResourceValueType valueType, String stringValue, Qualifier[] qualifiers);
+            [method_name("CreateDataResourceCandidate")]
+            static ResourceCandidate Create(String resourceName, UInt8[] dataValue);
+            [method_name("CreateDataResourceCandidateWithQualifiers")]
+            static ResourceCandidate Create(String resourceName, UInt8[] dataValue, Qualifier[] qualifiers);
+        }
+
         [interface_name("IResourceCandidate", 0E1518AA-11DC-4B4D-B9BD-0950F7E6CF77)]
         {
-            String ResourceName { get; };
-            ResourceValueType ValueType { get; };
+            String ResourceName { get; set; };
+            ResourceValueType ValueType { get; set; };
             Object Value { get; };
-            String StringValue { get; };
-            UInt8[] DataValue { get; };
-            IVectorView<Qualifier> Qualifiers { get; };
+            String StringValue { get; set; };
+            UInt8[] DataValue { get; set; };
+            IVectorView<Qualifier> Qualifiers { get; set; };
+
+            [default_overload]
+            void SetValue(String value);
+            [method_name("SetValueWithValueType")]
+            void SetValue(ResourceValueType valueType, String value);
+            [method_name("SetValueWithDataBytes")]
+            void SetValue(UInt8[] value);
         }
     }
 }

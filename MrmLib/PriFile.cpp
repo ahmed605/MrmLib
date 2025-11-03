@@ -48,7 +48,7 @@ namespace winrt::MrmLib::implementation
             }
         }
 
-        m_resourceCandidates = winrt::multi_threaded_vector<winrt::MrmLib::ResourceCandidate>(std::move(candidates)).GetView();
+        m_resourceCandidates = winrt::multi_threaded_vector<winrt::MrmLib::ResourceCandidate>(std::move(candidates));
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> PriFile::LoadAsync(array_view<uint8_t const> priBytes)
@@ -79,41 +79,9 @@ namespace winrt::MrmLib::implementation
         co_return co_await LoadAsync({ buffer.data(), buffer.Length() });
     }
 
-    winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::ResourceCandidate> PriFile::ResourceCandidates()
+    winrt::Windows::Foundation::Collections::IVector<winrt::MrmLib::ResourceCandidate> PriFile::ResourceCandidates()
     {
         return m_resourceCandidates;
-    }
-
-    void PriFile::ReplaceCandidateValue(winrt::MrmLib::ResourceCandidate const& resourceCandidate, ResourceValueType const& valueType, hstring const& value)
-    {
-        for (auto candidate : m_resourceCandidates)
-        {
-            if (candidate == resourceCandidate)
-            {
-                winrt::get_self<implementation::ResourceCandidate>(candidate)->ReplaceValue(value, valueType);
-                break;
-            }
-        }
-    }
-
-    void PriFile::ReplaceCandidateValue(winrt::MrmLib::ResourceCandidate const& resourceCandidate, array_view<uint8_t const> value)
-    {
-        for (auto candidate : m_resourceCandidates)
-        {
-            if (candidate == resourceCandidate)
-            {
-                winrt::get_self<implementation::ResourceCandidate>(candidate)->ReplaceValue(value);
-                break;
-            }
-        }
-    }
-
-    void PriFile::ReplaceCandidateValue(winrt::MrmLib::ResourceCandidate const& resourceCandidate, hstring const& value)
-    {
-        auto originalType = resourceCandidate.ValueType();
-        ReplaceCandidateValue(resourceCandidate,
-                              originalType != ResourceValueType::EmbeddedData ? originalType : ResourceValueType::String,
-                              value);
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::ReplacePathCandidatesWithEmbeddedDataResult> PriFile::ReplacePathCandidatesWithEmbeddedDataAsync(winrt::Windows::Storage::StorageFolder sourceFolderToEmbed)
@@ -142,7 +110,7 @@ namespace winrt::MrmLib::implementation
                             array_view<uint8_t const> view = { buffer.data(), buffer.Length() };
 
                             auto self = winrt::get_self<implementation::ResourceCandidate>(candidate);
-                            self->ReplaceValue(view);
+                            self->SetValue(view);
 
                             replacedCandidates.push_back(candidate);
                         }
@@ -195,16 +163,57 @@ namespace winrt::MrmLib::implementation
         uint16_t remappedQualifierSetIndex = 0;
         mrm::QualifierSetResult qualifierSet;
 
+        int emptyQualifierSetIndex = -1;
+
         for (auto candidate : m_resourceCandidates)
         {
             auto self = winrt::get_self<implementation::ResourceCandidate>(candidate);
             auto resCandidate = &self->Candidate;
             auto resName = self->ResourceName();
 
-            check_hresult(resCandidate->GetQualifiers(&qualifierSet));
-            check_hresult(qualifierSet.GetIndex(&qualifierSetIndex));
+            bool mappingSucceeded = true;
+            if (self->HasCustomQualifiers) [[unlikely]]
+            {
+                auto customQualifiers = self->Qualifiers();
+                if (!customQualifiers.Size()) [[unlikely]]
+                {
+					if (emptyQualifierSetIndex == -1) [[unlikely]]
+                    {
+						std::unique_ptr<mrm::DecisionInfoQualifierSetBuilder> emptyQualifierSet;
+                        check_hresult(priSectionBuilder->GetQualifierSetBuilder(std::out_ptr(emptyQualifierSet)));
+                        check_hresult(decisions->GetOrAddQualifierSet(emptyQualifierSet.get(), &qualifierMap, &emptyQualifierSetIndex));
+					}
 
-            if (qualifierSetMap.TryGetMapping(static_cast<uint16_t>(qualifierSetIndex), &remappedQualifierSetIndex))
+					remappedQualifierSetIndex = emptyQualifierSetIndex;
+                }
+                else [[likely]]
+                {
+                    std::unique_ptr<mrm::DecisionInfoQualifierSetBuilder> customQualifierSet;
+                    check_hresult(priSectionBuilder->GetQualifierSetBuilder(std::out_ptr(customQualifierSet)));
+
+                    for (auto qualifier : customQualifiers)
+                    {
+						auto stringValue = qualifier.StringValue();
+                        check_hresult(customQualifierSet->AddQualifier(
+                            mrm::CoreEnvironment::QualifierNames[(uint32_t)qualifier.Attribute()],
+                            stringValue.c_str(),
+                            qualifier.Priority(),
+                            qualifier.FallbackScore()));
+					}
+
+                    int customQualifierSetIndex = 0;
+                    check_hresult(decisions->GetOrAddQualifierSet(customQualifierSet.get(), &qualifierMap, &customQualifierSetIndex));
+					remappedQualifierSetIndex = static_cast<uint16_t>(customQualifierSetIndex);
+                }
+            }
+            else [[likely]]
+            {
+                check_hresult(resCandidate->GetQualifiers(&qualifierSet));
+                check_hresult(qualifierSet.GetIndex(&qualifierSetIndex));
+                mappingSucceeded = qualifierSetMap.TryGetMapping(static_cast<uint16_t>(qualifierSetIndex), &remappedQualifierSetIndex);
+            }
+
+            if (mappingSucceeded)
             {
                 auto type = self->ValueType();
                 if (type == ResourceValueType::EmbeddedData)
