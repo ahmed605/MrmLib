@@ -41,6 +41,21 @@ namespace MrmLib.UwpTest
                     var result = await pri.ReplacePathCandidatesWithEmbeddedDataAsync(folder);
                     var candidatesReplaced = result.CandidatesReplaced;
 
+                    var customResourceName = "Files/CustomImageResource.png";
+                    using var client = new System.Net.Http.HttpClient();
+                    client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+                    var bytes = await client.GetByteArrayAsync("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png");
+                    var customCandidate = ResourceCandidate.Create(customResourceName, bytes);
+                    pri.ResourceCandidates.Add(customCandidate);
+
+                    var localizedResourceName = "Resources/CustomLocalizedResource";
+                    var qualiferEn = Qualifier.Create(QualifierAttribute.LanguageList, "en-US");
+                    var qualiferFr = Qualifier.Create(QualifierAttribute.LanguageList, "fr-FR");
+                    var candidateEn = ResourceCandidate.Create(localizedResourceName, ResourceValueType.String, "Hello!", new[] { qualiferEn });
+                    var candidateFr = ResourceCandidate.Create(localizedResourceName, ResourceValueType.String, "Bonjour!", new[] { qualiferFr });
+                    pri.ResourceCandidates.Add(candidateEn);
+                    pri.ResourceCandidates.Add(candidateFr);
+
                     var fileSavePicker = new FileSavePicker();
                     fileSavePicker.FileTypeChoices.Add("PRI File", new List<string>() { ".pri" });
                     if (await fileSavePicker.PickSaveFileAsync() is { } saveFile)

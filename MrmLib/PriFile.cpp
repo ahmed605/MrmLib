@@ -181,7 +181,7 @@ namespace winrt::MrmLib::implementation
                     {
 						std::unique_ptr<mrm::DecisionInfoQualifierSetBuilder> emptyQualifierSet;
                         check_hresult(priSectionBuilder->GetQualifierSetBuilder(std::out_ptr(emptyQualifierSet)));
-                        check_hresult(decisions->GetOrAddQualifierSet(emptyQualifierSet.get(), &qualifierMap, &emptyQualifierSetIndex));
+                        check_hresult(decisions->GetOrAddQualifierSet(emptyQualifierSet.get(), &emptyQualifierSetIndex));
 					}
 
 					remappedQualifierSetIndex = emptyQualifierSetIndex;
@@ -202,7 +202,7 @@ namespace winrt::MrmLib::implementation
 					}
 
                     int customQualifierSetIndex = 0;
-                    check_hresult(decisions->GetOrAddQualifierSet(customQualifierSet.get(), &qualifierMap, &customQualifierSetIndex));
+                    check_hresult(decisions->GetOrAddQualifierSet(customQualifierSet.get(), &customQualifierSetIndex));
 					remappedQualifierSetIndex = static_cast<uint16_t>(customQualifierSetIndex);
                 }
             }

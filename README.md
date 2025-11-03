@@ -90,6 +90,30 @@ string assetsFolderPath = ...;
 var result = await priFile.ReplacePathCandidatesWithEmbeddedDataAsync(assetsFolderPath);
 ```
 
+### Adding new resources
+```csharp
+using MrmLib;
+
+...
+
+var priFile = await PriFile.LoadAsync(...);
+
+var customResourceName = "Files/CustomImageResource.png";
+using var client = new System.Net.Http.HttpClient();
+client.DefaultRequestHeaders.UserAgent.ParseAdd("Mozilla/5.0 (Windows NT 10.0; Win64; x64)");
+var bytes = await client.GetByteArrayAsync("https://upload.wikimedia.org/wikipedia/en/0/02/Homer_Simpson_2006.png");
+var customCandidate = ResourceCandidate.Create(customResourceName, bytes);
+priFile.ResourceCandidates.Add(customCandidate);
+
+var localizedResourceName = "Resources/CustomLocalizedResource";
+var qualiferEn = Qualifier.Create(QualifierAttribute.LanguageList, "en-US");
+var qualiferFr = Qualifier.Create(QualifierAttribute.LanguageList, "fr-FR");
+var candidateEn = ResourceCandidate.Create(localizedResourceName, ResourceValueType.String, "Hello!", new[] { qualiferEn });
+var candidateFr = ResourceCandidate.Create(localizedResourceName, ResourceValueType.String, "Bonjour!", new[] { qualiferFr });
+priFile.ResourceCandidates.Add(candidateEn);
+priFile.ResourceCandidates.Add(candidateFr);
+```
+
 ### Saving the modified PRI file
 ```csharp
 using MrmLib;
