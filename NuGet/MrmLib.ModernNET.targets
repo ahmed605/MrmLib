@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <MrmLibWinMDPath>$(MSBuildThisFileDirectory)..\..\lib\uap10.0\MrmLib.winmd</MrmLibWinMDPath>
+    <MrmLibWinMDImplementationDllName>MrmLib.dll</MrmLibWinMDImplementationDllName>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <MrmLibPlatform Condition="$(RuntimeIdentifier.EndsWith('-x64'))">x64</MrmLibPlatform>
+    <MrmLibPlatform Condition="$(RuntimeIdentifier.EndsWith('-x86'))">x86</MrmLibPlatform>
+    <MrmLibPlatform Condition="$(RuntimeIdentifier.EndsWith('-arm64'))">arm64</MrmLibPlatform>
+    <MrmLibPlatform Condition="$(RuntimeIdentifier.EndsWith('-arm'))">arm</MrmLibPlatform>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MrmLibPlatform)' == ''">
+    <MrmLibPlatform Condition="'$(Platform)' == 'Win32'">x86</MrmLibPlatform>
+    <MrmLibPlatform Condition="'$(Platform)' != 'Win32'">$(Platform)</MrmLibPlatform>
+    <MrmLibPlatform Condition="'$(Platform)' == 'AnyCPU'"></MrmLibPlatform>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <MrmLibWarnNoPlatform Condition="'$(MrmLibWarnNoPlatform)' == ''">true</MrmLibWarnNoPlatform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <WindowsMetadataReference Include="$(MrmLibWinMDPath)" Implementation="$(MrmLibWinMDImplementationDllName)" />
+  </ItemGroup>
+
+  <Target Name="MrmLibWarnNoPlatform" BeforeTargets="BeforeBuild" Condition="'$(MrmLibPlatform)' == '' and '$(MrmLibWarnNoPlatform)' == 'true'">
+    <Warning
+        Code="MRMLIB0001"
+        Text="'MrmLib.dll' cannot be referenced correctly, because the project is being built as 'AnyCPU'. Please specify a specific platform (eg. 'x64'), publish with a RID (runtime identifier, eg. 'win-x64'), or set 'MrmLibWarnNoPlatform' to suppress this error (note: you'll need to manually handle referencing MrmLib.dll in that case)." />
+  </Target>
+
+</Project>

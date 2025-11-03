@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net9.0-windows10.0.26100.0</TargetFramework>
+    <TargetPlatformMinVersion>10.0.15063.0</TargetPlatformMinVersion>
+    <Nullable>enable</Nullable>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <IsAotCompatible>true</IsAotCompatible>
+    <DisableRuntimeMarshalling>true</DisableRuntimeMarshalling>
+    <CsWinRTIncludes>MrmLib</CsWinRTIncludes>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251015.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MrmLib\MrmLib.vcxproj" />
+  </ItemGroup>
+</Project>

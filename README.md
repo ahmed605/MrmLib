@@ -6,7 +6,7 @@
 
 ## Installation
 
-NuGet package will be available SOON™, in the meantime you can clone the repository and build the solution instead.
+[![MrmLib](https://img.shields.io/nuget/v/MrmLib?style=for-the-badge&label=MrmLib&color=blue&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FMrmLib%2F)](https://www.nuget.org/packages/MrmLib/)
 
 ## Usage
 
