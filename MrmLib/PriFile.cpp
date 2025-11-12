@@ -44,7 +44,7 @@ namespace winrt::MrmLib::implementation
                 check_hresult(namedResource.GetResourceName(&str));
 
                 auto result = str.GetStringResult();
-                candidates.push_back(winrt::make<implementation::ResourceCandidate>(std::move(hstring(result->pRef, result->cchBuf - 1)), std::move(resCandidate)));
+                candidates.push_back(winrt::make<implementation::ResourceCandidate>(std::move(hstring(result->pRef, result->cchBuf - 1)), std::move(resCandidate), m_priFile->GetAtoms()));
             }
         }
 
@@ -193,9 +193,10 @@ namespace winrt::MrmLib::implementation
 
                     for (auto qualifier : customQualifiers)
                     {
-						auto stringValue = qualifier.StringValue();
+						auto stringValue = qualifier.Value();
+                        auto attributeName = qualifier.AttributeName();
                         check_hresult(customQualifierSet->AddQualifier(
-                            mrm::CoreEnvironment::QualifierNames[(uint32_t)qualifier.Attribute()],
+                            attributeName.c_str(),
                             stringValue.c_str(),
                             qualifier.Priority(),
                             qualifier.FallbackScore()));

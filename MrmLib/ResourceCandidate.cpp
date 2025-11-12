@@ -7,7 +7,7 @@ namespace winrt::MrmLib::implementation
 {
     using namespace ::winrt::Windows::Foundation;
 
-    ResourceCandidate::ResourceCandidate(hstring&& resourceName, mrm::ResourceCandidateResult&& candidate) :
+    ResourceCandidate::ResourceCandidate(hstring&& resourceName, mrm::ResourceCandidateResult&& candidate, mrm::AtomPoolGroup* pPoolGroup) :
         m_resourceName(std::forward<hstring>(resourceName)),
         Candidate(std::forward<mrm::ResourceCandidateResult>(candidate))
     {
@@ -53,7 +53,7 @@ namespace winrt::MrmLib::implementation
             mrm::QualifierResult qualifierResult;
             check_hresult(result.GetQualifier(i, &qualifierResult));
 
-            qualifiers.push_back(make<implementation::Qualifier>(std::move(qualifierResult)));
+            qualifiers.push_back(make<implementation::Qualifier>(std::move(qualifierResult), pPoolGroup));
         }
 
         m_qualifiers = winrt::single_threaded_vector<winrt::MrmLib::Qualifier>(std::move(qualifiers)).GetView();

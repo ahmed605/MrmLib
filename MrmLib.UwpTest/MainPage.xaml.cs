@@ -49,8 +49,8 @@ namespace MrmLib.UwpTest
                     pri.ResourceCandidates.Add(customCandidate);
 
                     var localizedResourceName = "Resources/CustomLocalizedResource";
-                    var qualiferEn = Qualifier.Create(QualifierAttribute.LanguageList, "en-US");
-                    var qualiferFr = Qualifier.Create(QualifierAttribute.LanguageList, "fr-FR");
+                    var qualiferEn = Qualifier.Create(QualifierAttribute.Language, "en-US");
+                    var qualiferFr = Qualifier.Create(QualifierAttribute.Language, "fr-FR");
                     var candidateEn = ResourceCandidate.Create(localizedResourceName, ResourceValueType.String, "Hello!", new[] { qualiferEn });
                     var candidateFr = ResourceCandidate.Create(localizedResourceName, ResourceValueType.String, "Bonjour!", new[] { qualiferFr });
                     pri.ResourceCandidates.Add(candidateEn);

@@ -22,17 +22,18 @@ namespace winrt::MrmLib::implementation
     private:
 		//mrm::QualifierResult m_qualifier;
 		QualifierAttribute m_attribute = (QualifierAttribute)-1;
+        hstring m_attributeName;
 		QualifierOperator m_operator = (QualifierOperator)-1;
-		QualifierValueType m_valueType = (QualifierValueType)-1;
+		//QualifierValueType m_valueType = (QualifierValueType)-1;
 		hstring m_stringValue;
-        QualifierAttribute m_attributeValue = (QualifierAttribute)-1;
-		uint64_t m_customOperator = 0;
+        //QualifierAttribute m_attributeValue = (QualifierAttribute)-1;
+        hstring m_customOperator;
 		int32_t m_priority = 0;
 		double m_fallbackScore = 0.0;
 
     public:
         Qualifier() = default;
-		Qualifier(mrm::QualifierResult&& qualifier);
+		Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup);
 		Qualifier(QualifierAttribute const& attribute, QualifierOperator const& _operator, hstring const& qualifierValue, int32_t priority, double fallbackScore);
 
         static winrt::MrmLib::Qualifier Create(winrt::MrmLib::QualifierAttribute const& qualifierAttribute, winrt::MrmLib::QualifierOperator const& _operator, hstring const& qualifierValue, int32_t priority, double fallbackScore);
@@ -44,13 +45,9 @@ namespace winrt::MrmLib::implementation
 
         winrt::MrmLib::QualifierAttribute Attribute();
         hstring AttributeName();
-        hstring AttributeTypeName();
         winrt::MrmLib::QualifierOperator Operator();
-        uint64_t CustomOperator();
-        winrt::MrmLib::QualifierValueType ValueType();
-        hstring StringValue();
-        QualifierAttribute AttributeValue();
-        winrt::Windows::Foundation::IInspectable Value();
+        hstring CustomOperator();
+        hstring Value();
         int32_t Priority();
         double FallbackScore();
     };

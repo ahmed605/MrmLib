@@ -2,10 +2,10 @@ namespace MrmLib
 {
     enum QualifierAttribute
     {
-        LanguageList = 0,
+        Language = 0,
         Contrast = 1,
         Scale = 2,
-        RegionId = 3,
+        HomeRegion = 3,
         TargetSize = 4,
         LayoutDirection = 5,
         Theme = 6,
@@ -13,7 +13,7 @@ namespace MrmLib
         DXFeatureLevel = 8,
         Configuration = 9,
         DeviceFamily = 10,
-        CustomQualifier = 11
+        Custom = 11
     };
 
     enum QualifierOperator
@@ -32,12 +32,6 @@ namespace MrmLib
         Equal = 11,
         ExtendedOperator = 12,
         Custom = 13
-    };
-
-    enum QualifierValueType
-    {
-        String = 0,
-        Attribute = 1
     };
 
     runtimeclass Qualifier
@@ -60,13 +54,9 @@ namespace MrmLib
         {
             QualifierAttribute Attribute { get; };
             String AttributeName { get; };
-            String AttributeTypeName { get; };
             QualifierOperator Operator { get; };
-            UInt64 CustomOperator { get; };
-            QualifierValueType ValueType { get; };
-            String StringValue { get; };
-            QualifierAttribute AttributeValue { get; };
-            Object Value { get; };
+            String CustomOperator { get; };
+            String Value { get; };
             Int32 Priority { get; };
             Double FallbackScore { get; };
         }

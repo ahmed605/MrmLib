@@ -4,11 +4,23 @@
 
 namespace winrt::MrmLib::implementation
 {
-    Qualifier::Qualifier(mrm::QualifierResult&& qualifier)
+    Qualifier::Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup)
     {
         mrm::Atom attribute;
         check_hresult(qualifier.GetOperand1Attribute(&attribute));
-        m_attribute = static_cast<QualifierAttribute>(attribute.GetUInt64());
+        m_attribute = static_cast<QualifierAttribute>(attribute.GetIndex());
+
+        if (m_attribute == QualifierAttribute::Custom)
+        {
+		    mrm::StringResult strResult;
+            check_hresult(pPoolGroup->GetString(attribute, &strResult));
+			auto result = strResult.GetStringResult();
+			m_attributeName = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
+        }
+        else
+        {
+			m_attributeName = mrm::CoreEnvironment::QualifierNames[(int)m_attribute];
+        }
 
         if (!qualifier.OperatorIsCustom()) [[likely]]
         {
@@ -22,30 +34,17 @@ namespace winrt::MrmLib::implementation
 
             mrm::Atom op;
             check_hresult(qualifier.GetCustomOperator(&op));
-            m_customOperator = op.GetUInt64();
-        }
-
-        bool isLiteral = false;
-        check_hresult(qualifier.Operand2IsLiteral(&isLiteral));
-
-        if (isLiteral) [[likely]]
-        {
-            m_valueType = QualifierValueType::String;
 
             mrm::StringResult strResult;
-            check_hresult(qualifier.GetOperand2Literal(&strResult));
+            check_hresult(pPoolGroup->GetString(op, &strResult));
             auto result = strResult.GetStringResult();
-
-            m_stringValue = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
+			m_customOperator = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
         }
-        else [[unlikely]]
-        {
-            m_valueType = QualifierValueType::Attribute;
 
-            mrm::Atom attribute2;
-            check_hresult(qualifier.GetOperand2Attribute(&attribute2));
-            m_attributeValue = static_cast<QualifierAttribute>(attribute2.GetUInt64());
-        }
+        mrm::StringResult strResult;
+        check_hresult(qualifier.GetOperand2Literal(&strResult));
+        auto result = strResult.GetStringResult();
+        m_stringValue = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
 
         m_priority = qualifier.GetPriority();
 
@@ -57,9 +56,9 @@ namespace winrt::MrmLib::implementation
     Qualifier::Qualifier(QualifierAttribute const& attribute, QualifierOperator const& _operator, hstring const& qualifierValue, int32_t priority, double fallbackScore)
     {
         m_attribute = attribute;
+        m_attributeName = mrm::CoreEnvironment::QualifierNames[(int)m_attribute];
         m_operator = _operator;
         m_stringValue = qualifierValue;
-        m_valueType = QualifierValueType::String;
         m_priority = priority;
         m_fallbackScore = fallbackScore;
     }
@@ -106,14 +105,7 @@ namespace winrt::MrmLib::implementation
 
     hstring Qualifier::AttributeName()
     {
-		// TODO: Ensure index is in bounds
-		return mrm::CoreEnvironment::QualifierNames[static_cast<uint32_t>(m_attribute)];
-    }
-
-    hstring Qualifier::AttributeTypeName()
-    {
-        // TODO: Ensure index is in bounds
-		return mrm::CoreEnvironment::QualifierTypeNames[static_cast<uint32_t>(m_attribute)];
+        return m_attributeName;
     }
 
     winrt::MrmLib::QualifierOperator Qualifier::Operator()
@@ -128,7 +120,7 @@ namespace winrt::MrmLib::implementation
         return m_operator;
     }
 
-    uint64_t Qualifier::CustomOperator()
+    hstring Qualifier::CustomOperator()
     {
         /*if (!m_qualifier.OperatorIsCustom())
             return 0;
@@ -140,61 +132,9 @@ namespace winrt::MrmLib::implementation
         return m_customOperator;
     }
 
-    winrt::MrmLib::QualifierValueType Qualifier::ValueType()
+    hstring Qualifier::Value()
     {
-        /*bool isLiteral = false;
-        check_hresult(m_qualifier.Operand2IsLiteral(&isLiteral));
-        return isLiteral ? QualifierValueType::String : QualifierValueType::Attribute;*/
-
-        return m_valueType;
-    }
-
-    hstring Qualifier::StringValue()
-    {
-        /*if (ValueType() == QualifierValueType::String)
-        {
-            mrm::StringResult strResult;
-            check_hresult(m_qualifier.GetOperand2Literal(&strResult));
-            auto result = strResult.GetStringResult();
-            return result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
-        }*/
-
-        if (m_valueType == QualifierValueType::String) [[likely]]
-        {
-            return m_stringValue;
-        }
-
-        return L"";
-    }
-
-    QualifierAttribute Qualifier::AttributeValue()
-    {
-        /*if (ValueType() == QualifierValueType::Attribute)
-        {
-            mrm::Atom attribute;
-            check_hresult(m_qualifier.GetOperand2Attribute(&attribute));
-            return static_cast<uint32_t>(attribute.GetUInt64());
-        }*/
-
-        if (m_valueType == QualifierValueType::Attribute) [[unlikely]]
-        {
-            return m_attributeValue;
-        }
-
-        return (QualifierAttribute)-1;
-    }
-
-    winrt::Windows::Foundation::IInspectable Qualifier::Value()
-    {
-        /*if (ValueType() == QualifierValueType::String)
-            return winrt::box_value(StringValue());
-
-        return winrt::box_value(AttributeValue());*/
-
-        if (m_valueType == QualifierValueType::String) [[likely]]
-            return winrt::box_value(m_stringValue);
-
-        return winrt::box_value(m_attributeValue);
+        return m_stringValue;
     }
 
     int32_t Qualifier::Priority()
