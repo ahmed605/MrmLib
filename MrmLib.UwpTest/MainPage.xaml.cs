@@ -33,6 +33,17 @@ namespace MrmLib.UwpTest
                 var value = resources[0].Value;
                 var data = resources[0].DataValue;
                 var qualifiers = resources[0].Qualifiers;
+                var version = pri.Version;
+                var checksum = pri.Checksum;
+                var simpleId = pri.SimpleId;
+                var uniqueId = pri.UniqueId;
+                var magic = pri.Magic;
+                var magicString = pri.MagicString;
+                var priType = pri.Type;
+
+                //var newId = "new_id_test_123";
+                //pri.UniqueId = uniqueId.Replace(simpleId, newId);
+                //pri.SimpleId = newId;
 
                 var folderPicker = new FolderPicker();
                 folderPicker.FileTypeFilter.Add("*");

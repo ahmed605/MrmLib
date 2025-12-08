@@ -10,6 +10,24 @@ namespace MrmLib
         }
     }
 
+    enum PriType
+    {
+        Unknown = -1,
+        WindowsEight,
+        WindowsBlue,
+        WindowsPhoneBlue,
+        Universal,
+        UniversalRS4,
+        UniversalVNext,
+        Test
+    };
+
+    struct PriVersion
+    {
+        UInt16 Major;
+        UInt16 Minor;
+	};
+
     runtimeclass PriFile
     {
         [static_name("IPriFileStatics", CE68A109-67EE-4B84-8823-32413732A4F3)]
@@ -36,13 +54,29 @@ namespace MrmLib
             Windows.Foundation.IAsyncOperation<ReplacePathCandidatesWithEmbeddedDataResult>
                 ReplacePathCandidatesWithEmbeddedDataAsync(String sourceFolderPathToEmbed);
 
-			UInt8[] Write();
+            UInt8[] Write();
             [method_name("WriteAsyncWithPath")]
             Windows.Foundation.IAsyncAction WriteAsync(String destinationFilePath);
             [default_overload]
             Windows.Foundation.IAsyncAction WriteAsync(Windows.Storage.StorageFile destinationFile);
-			[method_name("WriteAsyncWithStream")]
+            [method_name("WriteAsyncWithStream")]
             Windows.Foundation.IAsyncAction WriteAsync(Windows.Storage.Streams.IOutputStream destinationStream);
+        }
+
+        [interface_name("IPriFile2", FA4F333B-B52F-405C-A614-016C1BC68F89)]
+        {
+            // Magic
+            PriType Type { get; };
+            UInt64 Magic { get; };
+            String MagicString { get; };
+
+            // Version
+            PriVersion Version { get; };
+			UInt32 Checksum { get; };
+
+			// Identifiers
+			String SimpleId { get; set; };
+			String UniqueId { get; set; };
         }
     }
 }

@@ -49,6 +49,11 @@ namespace winrt::MrmLib::implementation
         }
 
         m_resourceCandidates = winrt::multi_threaded_vector<winrt::MrmLib::ResourceCandidate>(std::move(candidates));
+
+        auto schema = map->GetSchema();
+        m_simpleId = schema->GetSimpleId();
+        m_uniqueId = schema->GetUniqueId();
+        m_checksum = schema->GetVersionInfo()->GetVersionChecksum();
     }
 
     winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> PriFile::LoadAsync(array_view<uint8_t const> priBytes)
@@ -130,15 +135,43 @@ namespace winrt::MrmLib::implementation
 
     com_array<uint8_t> PriFile::Write()
     {
+        mrm::CoreProfile* profile = s_coreProfile.get();
+
+        std::unique_ptr<mrm::CoreProfile> customProfile;
+        mrm::MrmPlatformVersionInternal platformVersion = { };
+        std::unique_ptr<mrm::MrmBuildConfiguration> buildConfig;
+        if (SUCCEEDED(mrm::CoreProfile::GetDefaultTargetPlatformVersionForFileMagic(std::bit_cast<DEFFILE_MAGIC>(Magic()), &platformVersion))
+            && SUCCEEDED(mrm::MrmBuildConfiguration::CreateInstance(platformVersion, std::out_ptr(buildConfig))))
+        {
+            check_hresult(mrm::CoreProfile::ChooseDefaultProfile(std::out_ptr(customProfile)));
+            customProfile->SetBuildConfiguration(buildConfig.get());
+			profile = customProfile.get();
+        }
+
         std::unique_ptr<mrm::PriFileBuilder> priFileBuilder;
-        check_hresult(mrm::PriFileBuilder::CreateInstance(s_coreProfile.get(), std::out_ptr(priFileBuilder)));
+        check_hresult(mrm::PriFileBuilder::CreateInstance(profile, std::out_ptr(priFileBuilder)));
 
         const mrm::IResourceMapBase* map = nullptr;
         check_hresult(m_priFile->GetResourceMap(0, &map));
 
         mrm::ResourceMapSectionBuilder* mapBuilder = nullptr;
         mrm::PriSectionBuilder* priSectionBuilder = priFileBuilder->GetDescriptor();
+
+        std::unique_ptr<HierarchicalSchemaWrapper> schemaWrapper;
         const mrm::IHierarchicalSchema* schema = map->GetSchema();
+
+        if (m_idsChanged)
+        {
+#if ENABLE_SCHEMA_VERSION_WRAPPER
+            auto version = Version();
+            schemaWrapper = std::make_unique<HierarchicalSchemaWrapper>(schema, m_simpleId, m_uniqueId, version.Major, version.Minor);
+            #warning "Schema version wrapper is enabled but no version override is passed."
+#else
+            schemaWrapper = std::make_unique<HierarchicalSchemaWrapper>(schema, m_simpleId, m_uniqueId);
+#endif
+
+            schema = schemaWrapper.get();
+        }
 
         mapBuilder = priSectionBuilder->GetResourceMapBuilder(schema->GetSimpleId());
         if (mapBuilder == nullptr)
@@ -177,14 +210,14 @@ namespace winrt::MrmLib::implementation
                 auto customQualifiers = self->Qualifiers();
                 if (!customQualifiers.Size()) [[unlikely]]
                 {
-					if (emptyQualifierSetIndex == -1) [[unlikely]]
+                    if (emptyQualifierSetIndex == -1) [[unlikely]]
                     {
-						std::unique_ptr<mrm::DecisionInfoQualifierSetBuilder> emptyQualifierSet;
+                        std::unique_ptr<mrm::DecisionInfoQualifierSetBuilder> emptyQualifierSet;
                         check_hresult(priSectionBuilder->GetQualifierSetBuilder(std::out_ptr(emptyQualifierSet)));
                         check_hresult(decisions->GetOrAddQualifierSet(emptyQualifierSet.get(), &emptyQualifierSetIndex));
-					}
+                    }
 
-					remappedQualifierSetIndex = emptyQualifierSetIndex;
+                    remappedQualifierSetIndex = emptyQualifierSetIndex;
                 }
                 else [[likely]]
                 {
@@ -193,18 +226,18 @@ namespace winrt::MrmLib::implementation
 
                     for (auto qualifier : customQualifiers)
                     {
-						auto stringValue = qualifier.Value();
+                        auto stringValue = qualifier.Value();
                         auto attributeName = qualifier.AttributeName();
                         check_hresult(customQualifierSet->AddQualifier(
                             attributeName.c_str(),
                             stringValue.c_str(),
                             qualifier.Priority(),
                             qualifier.FallbackScore()));
-					}
+                    }
 
                     int customQualifierSetIndex = 0;
                     check_hresult(decisions->GetOrAddQualifierSet(customQualifierSet.get(), &customQualifierSetIndex));
-					remappedQualifierSetIndex = static_cast<uint16_t>(customQualifierSetIndex);
+                    remappedQualifierSetIndex = static_cast<uint16_t>(customQualifierSetIndex);
                 }
             }
             else [[likely]]
@@ -274,6 +307,7 @@ namespace winrt::MrmLib::implementation
         void* priFileContents = nullptr;
         uint32_t priFileContentsSize = 0;
         check_hresult(priFileBuilder->GetFileContentsRef(&priFileContents, &priFileContentsSize));
+        m_checksum = mapBuilder->GetSchema()->GetVersionInfo()->GetVersionChecksum();
 
         return { (uint8_t*)priFileContents, (uint8_t*)priFileContents + priFileContentsSize };
     }
@@ -304,5 +338,89 @@ namespace winrt::MrmLib::implementation
         auto const& file = co_await folder.CreateFileAsync(std::filesystem::path(file_view).filename().wstring(), CreationCollisionOption::ReplaceExisting);
         co_await WriteAsync(file);
         co_return;
+    }
+
+    uint64_t PriFile::Magic()
+    {
+        const mrm::BaseFile* baseFile = nullptr;
+        winrt::check_hresult(static_cast<mrm::PriFile*>(m_priFile.get())->GetBaseFile(&baseFile));
+        return baseFile->GetFileHeader()->magic.ullMagic;
+    }
+
+    #define PriFile_Magic(...) std::bit_cast<uint64_t>(std::array<BYTE, sizeof(UINT64) / sizeof(BYTE)> { __VA_ARGS__ })
+    inline static constexpr const auto PriFile_gWin8PriFileMagic = PriFile_Magic('m', 'r', 'm', '_', 'p', 'r', 'i', '0');
+    inline static constexpr const auto PriFile_gWinBluePriFileMagic = PriFile_Magic('m', 'r', 'm', '_', 'p', 'r', 'i', '1');
+    inline static constexpr const auto PriFile_gWindowsPhoneBluePriFileMagic = PriFile_Magic('m', 'r', 'm', '_', 'p', 'r', 'i', 'f');
+    inline static constexpr const auto PriFile_gUniversalPriFileMagic = PriFile_Magic('m', 'r', 'm', '_', 'p', 'r', 'i', '2');
+    inline static constexpr const auto PriFile_gUniversalRS4PriFileMagic = PriFile_Magic('m', 'r', 'm', '_', 'p', 'r', 'i', '3');
+    inline static constexpr const auto PriFile_gUniversalVNextPriFileMagic = PriFile_Magic('m', 'r', 'm', '_', 'v', 'n', 'x', 't');
+    inline static constexpr const auto PriFile_gTestPriFileMagic = PriFile_Magic('m', 'r', 'm', '_', 't', 'e', 's', 't');
+
+    winrt::MrmLib::PriType PriFile::Type()
+    {
+        switch (Magic())
+        {
+            case PriFile_gWin8PriFileMagic:
+                return PriType::WindowsEight;
+            case PriFile_gWinBluePriFileMagic:
+                return PriType::WindowsBlue;
+            case PriFile_gWindowsPhoneBluePriFileMagic:
+                return PriType::WindowsPhoneBlue;
+            case PriFile_gUniversalPriFileMagic:
+                return PriType::Universal;
+            case PriFile_gUniversalRS4PriFileMagic:
+                return PriType::UniversalRS4;
+            case PriFile_gUniversalVNextPriFileMagic:
+                return PriType::UniversalVNext;
+            case PriFile_gTestPriFileMagic:
+                return PriType::Test;
+            default:
+                return PriType::Unknown;
+        }
+    }
+
+    hstring PriFile::MagicString()
+    {
+        auto magic = Magic();
+        wchar_t magicStr[sizeof(magic) / sizeof(char)] = { };
+        MultiByteToWideChar(CP_ACP, 0, reinterpret_cast<const char*>(&magic), _countof(magicStr), magicStr, _countof(magicStr));
+
+        return { magicStr, _countof(magicStr) };
+    }
+
+    winrt::MrmLib::PriVersion PriFile::Version()
+    {
+        const mrm::BaseFile* baseFile = nullptr;
+        winrt::check_hresult(static_cast<mrm::PriFile*>(m_priFile.get())->GetBaseFile(&baseFile));
+        auto header = baseFile->GetFileHeader();
+
+        return { header->majorVersion, header->minorVersion };
+    }
+
+    uint32_t PriFile::Checksum()
+    {
+        return m_checksum;
+    }
+
+    hstring PriFile::SimpleId()
+    {
+        return m_simpleId;
+    }
+
+    void PriFile::SimpleId(hstring const& value)
+    {
+        m_simpleId = value;
+        m_idsChanged = true;
+    }
+
+    hstring PriFile::UniqueId()
+    {
+        return m_uniqueId;
+    }
+
+    void PriFile::UniqueId(hstring const& value)
+    {
+        m_uniqueId = value;
+        m_idsChanged = true;
     }
 }

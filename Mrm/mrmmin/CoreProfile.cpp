@@ -7,10 +7,10 @@ namespace Microsoft::Resources
 {
 
 CoreProfile::CoreProfile() :
-    m_pBuildConfiguration(nullptr), m_initializer(CoreEnvironment::GetEnvironmentInitializer()), m_defaultEnvironmentIndex(0)
+    m_pBuildConfiguration(nullptr), m_initializer(CoreEnvironment::GetEnvironmentInitializer()), m_defaultEnvironmentIndex(0), m_usingCustomBuildConfiguration(false)
 {}
 
-CoreProfile::~CoreProfile() { delete m_pBuildConfiguration; }
+CoreProfile::~CoreProfile() { if(!m_usingCustomBuildConfiguration) delete m_pBuildConfiguration; }
 
 bool CoreProfile::IsLoadPriFileAllowed(_In_ PCWSTR /*pPriFileFullPath*/) const { return true; }
 
@@ -64,7 +64,7 @@ bool CoreProfile::IsSupportedFileMagicNumber(_In_ const DEFFILE_MAGIC& fileMagic
         (fileMagicNumber.ullMagic == gUniversalVNextPriFileMagic.ullMagic));
 }
 
-HRESULT CoreProfile::GetTargetPlatformVersionForFileMagic(
+HRESULT CoreProfile::GetDefaultTargetPlatformVersionForFileMagic(
     _In_ const DEFFILE_MAGIC& fileMagicNumber,
     _Out_ MrmPlatformVersionInternal* pPlatformVersionOut)
 {
@@ -87,6 +87,13 @@ HRESULT CoreProfile::GetTargetPlatformVersionForFileMagic(
     {
         RETURN_HR(HRESULT_FROM_WIN32(ERROR_MRM_INVALID_PRI_FILE));
     }
+}
+
+HRESULT CoreProfile::GetTargetPlatformVersionForFileMagic(
+    _In_ const DEFFILE_MAGIC& fileMagicNumber,
+    _Out_ MrmPlatformVersionInternal* pPlatformVersionOut)
+{
+	return GetDefaultTargetPlatformVersionForFileMagic(fileMagicNumber, pPlatformVersionOut);
 }
 
 HRESULT CoreProfile::GetTargetPlatformAndVersionForFileMagic(
@@ -321,6 +328,12 @@ MrmBuildConfiguration* CoreProfile::GetBuildConfiguration()
     }
 
     return m_pBuildConfiguration;
+}
+
+void CoreProfile::SetBuildConfiguration(MrmBuildConfiguration* pBuildConfiguration)
+{
+	m_pBuildConfiguration = pBuildConfiguration;
+	m_usingCustomBuildConfiguration = true;
 }
 
 HRESULT CoreProfile::GetDefaultUniqueName(_In_ PCWSTR pSimpleName, _Inout_ StringResult* pUniqueNameOut) const

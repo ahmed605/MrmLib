@@ -231,6 +231,10 @@ public:
     // Default implementation supports only universal PRI files
     virtual bool IsSupportedFileMagicNumber(_In_ const DEFFILE_MAGIC& fileMagicNumber) const;
 
+    static HRESULT GetDefaultTargetPlatformVersionForFileMagic(
+        _In_ const DEFFILE_MAGIC& fileMagicNumber,
+        _Out_ MrmPlatformVersionInternal* pPlatformVersionOut);
+
     // Determines the MrmPlatformVersionInternal which corresponds to a
     // given file magic number.  Default implementation supports
     // only universal files for the WinCorePlatform default version.
@@ -473,6 +477,7 @@ public:
      * The base implementation returns the default build configuration for a universal PRI file
      */
     virtual MrmBuildConfiguration* GetBuildConfiguration();
+    virtual void SetBuildConfiguration(MrmBuildConfiguration* pBuildConfiguration);
 
     // Default unique name implementation uses ms-appx protocol
     virtual HRESULT GetDefaultUniqueName(_In_ PCWSTR pSimpleName, _Inout_ StringResult* pUniqueNameOut) const;
@@ -578,6 +583,7 @@ protected:
     bool TryGetRedirectedSystemMergeFolder(_Inout_ StringResult* redirectedMergeFolder) const;
 
     MrmBuildConfiguration* m_pBuildConfiguration;
+	bool m_usingCustomBuildConfiguration;
 
     const ENVIRONMENT_INITIALIZER* m_initializer;
     int m_defaultEnvironmentIndex;
