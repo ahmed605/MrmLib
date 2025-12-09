@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 #pragma once
+#include "mrm/Platform/MrmConstants.h"
 
 namespace Microsoft::Resources
 {
@@ -588,6 +589,116 @@ protected:
     const ENVIRONMENT_INITIALIZER* m_initializer;
     int m_defaultEnvironmentIndex;
     mutable StringResult m_cachedWindowsFolderName;
+};
+
+class MrmProfile : public CoreProfile
+{
+public:
+    virtual ~MrmProfile() {}
+
+    HRESULT GetDefaultEnvironmentForFileMagic(
+        _In_ const DEFFILE_MAGIC& fileMagicNumber,
+        _Inout_opt_ StringResult* nameOut,
+        _Inout_opt_ EnvironmentVersionInfo* versionInfoOut) const override;
+
+    HRESULT GetQualifierInfoForEnvironment(
+        _In_ PCWSTR sourceName,
+        _In_ const IEnvironmentVersionInfo* sourceVersion,
+        _In_ const IEnvironment* targetEnvironment,
+        _Out_ int* numMappedQualifiers,
+        _Outptr_result_buffer_maybenull_(*numMappedQualifiers) const PCWSTR** mappedQualifierNames,
+        _Outptr_result_buffer_maybenull_(*numMappedQualifiers) const Atom::SmallIndex** qualifierMappings) const override;
+
+    HRESULT GetTargetPlatformAndVersionForFileMagic(
+        _In_ const DEFFILE_MAGIC& fileMagicNumber,
+        _Inout_opt_ StringResult* correspondingPlatformName,
+        _Inout_opt_ StringResult* correspondingPlatformVersion) override;
+
+    HRESULT GetTargetPlatformVersionForFileMagic(
+        _In_ const DEFFILE_MAGIC& fileMagicNumber,
+        _Out_ MrmPlatformVersionInternal* pPlatformVersionOut) override;
+};
+
+class WindowsClientProfileBase : public MrmProfile
+{
+private:
+    MrmPlatformVersionInternal m_platformVersion;
+    const ENVIRONMENT_INITIALIZER* m_pEnvironmentInitializer;
+    const QUALIFIER_INFO* m_pDefaultQualifierInfo;
+    bool m_isDesignMode;
+
+	WindowsClientProfileBase(_In_ MrmPlatformVersionInternal platform);
+
+public:
+    virtual ~WindowsClientProfileBase();
+	HRESULT Initialize(_In_ MrmPlatformVersionInternal platform);
+	static HRESULT CreateInstance(_In_ MrmPlatformVersionInternal platform, _Outptr_ WindowsClientProfileBase** profile);
+
+    static HRESULT RemapQualifierTypeIndexToCore(
+        MrmPlatformVersionInternal platform,
+        Microsoft::Resources::Atom qualifierName,
+        CoreEnvironment::QualifierTypeIndex* coreQualifierTypeIndex,
+        bool* bucketedScale = nullptr);
+
+    static HRESULT RemapQualifierIndexToCore(
+        Microsoft::Resources::MrmPlatformVersionInternal platform,
+        Microsoft::Resources::Atom qualifierName,
+        CoreEnvironment::QualifierIndex* coreQualifierIndex,
+        bool* bucketedScale = nullptr);
+
+    bool IsSupportedFileMagicNumber(_In_ const DEFFILE_MAGIC& fileMagicNumber) const override;
+
+    const QUALIFIER_INFO* GetDefaultQualifierInfo() { return m_pDefaultQualifierInfo; };
+
+    HRESULT CreateEnvironment(_In_ int index, _In_ AtomPoolGroup* pAtoms, _Outptr_ IEnvironment** environment) const override;
+
+    MrmBuildConfiguration* GetBuildConfiguration() override;
+    void SetBuildConfiguration([[maybe_unused]] MrmBuildConfiguration* pBuildConfiguration) override { };
+
+    virtual HRESULT GetQualifierBuildInfoByName(
+        Microsoft::Resources::Atom qualifierName,
+        Microsoft::Resources::UnifiedEnvironment* pUnifiedEnvironment,
+        Microsoft::Resources::QualifierBuildInfo* pQualifierInfoOut) const;
+
+    HRESULT GetProviderForQualifier(
+        _In_ const IEnvironment* pResolver,
+        _In_ Atom qualifierAtom,
+        _Out_ IQualifierValueProvider** ppProviderOut) const override;
+
+    /*static HRESULT GetDefaultProviderForQualifier(
+        const Microsoft::Resources::IEnvironment* pEnvironment,
+        Microsoft::Resources::MrmPlatformVersionInternal platform,
+        Microsoft::Resources::Atom qualifierName,
+        _Out_ IQualifierValueProvider** ppProviderOut)*/;
+
+    /*static HRESULT GetDefaultTypeForQualifier(
+        const Microsoft::Resources::IEnvironment* pEnvironment,
+        Microsoft::Resources::MrmPlatformVersionInternal platform,
+        Microsoft::Resources::Atom qualifierName);*/
+
+    HRESULT GetTypeForQualifier(
+        _In_ const IEnvironment* pEnvironment,
+        _In_ Atom qualifierAtom,
+        _Out_ IBuildQualifierType** ppTypeOut) const override;
+
+    HRESULT GetEnvironmentVersionInfo(
+        _In_ int index,
+        _Inout_ StringResult* environmentName,
+        _Outptr_ IEnvironmentVersionInfo** info) const override;
+
+    HRESULT GetTargetPlatformAndVersionForFileMagic(
+        _In_ const DEFFILE_MAGIC& fileMagicNumber,
+        _Inout_opt_ StringResult* correspondingPlatformName,
+        _Inout_opt_ StringResult* correspondingPlatformVersion) override;
+
+    HRESULT GetTargetPlatformAndVersion(
+        _Inout_opt_ StringResult* correspondingPlatformName,
+        _Inout_opt_ StringResult* correspondingPlatformVersion) override;
+
+    bool IsCompatibleEnvironment(
+        _In_ const EnvironmentReference* wantEnvironment,
+        _In_ const IEnvironment* haveEnvironment,
+        _Outptr_result_maybenull_ const RemapAtomPool** qualifierMapping) const override;
 };
 
 /*! 

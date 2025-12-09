@@ -29,6 +29,7 @@ namespace MrmLib.UwpTest
             {
                 var pri = await PriFile.LoadAsync(file);
                 var resources = pri.ResourceCandidates;
+                var name = resources[0].ResourceName;
                 var type = resources[0].ValueType;
                 var value = resources[0].Value;
                 var data = resources[0].DataValue;

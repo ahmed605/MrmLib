@@ -56,6 +56,7 @@ __declspec(selectany) extern const int MajorVersion = 1;
 __declspec(selectany) extern const int MinorVersion = 2;
 
 __declspec(selectany) extern PCWSTR const DefaultPlatformVersion = L"10.0.0.5";
+__declspec(selectany) extern PCWSTR const UniversalPlatformVersion = L"10.0.0";
 
 __declspec(selectany) extern PCWSTR const QualifierType_LanguageList = L"LanguageList";
 __declspec(selectany) extern PCWSTR const QualifierType_Contrast = L"ContrastMode";
@@ -214,4 +215,366 @@ __declspec(selectany) extern const int version1_2_NumQualifierTypes = 12;
 __declspec(selectany) extern const int NoBaseEnvironment = -1;
 
 } // namespace CoreEnvironment
+
+namespace WindowsClientEnvironment
+{
+
+    __declspec(selectany) extern PCWSTR const PlatformName = L"client";
+    __declspec(selectany) extern PCWSTR const EnvironmentSimpleName = L"Windows";
+    __declspec(selectany) extern PCWSTR const EnvironmentUniqueName = L"win://Windows/1";
+
+    __declspec(selectany) extern const int MajorVersion = 1;
+    __declspec(selectany) extern const int MinorVersion = 4;
+
+    __declspec(selectany) extern PCWSTR const DefaultPlatformVersion = L"6.3.0";
+    __declspec(selectany) extern PCWSTR const LegacyPlatformVersion = L"6.2.1";
+
+    __declspec(selectany) extern PCWSTR const QualifierType_LanguageList = L"LanguageList";
+    __declspec(selectany) extern PCWSTR const QualifierType_Contrast = L"ContrastMode";
+    __declspec(selectany) extern PCWSTR const QualifierType_Scale = L"ScaleFactor";
+    __declspec(selectany) extern PCWSTR const QualifierType_RegionId = L"RegionId";
+    __declspec(selectany) extern PCWSTR const QualifierType_TargetSize = L"TargetSizeValue";
+    __declspec(selectany) extern PCWSTR const QualifierType_LayoutDirection = L"LayoutDirectionValue";
+    __declspec(selectany) extern PCWSTR const QualifierType_Configuration = L"Configuration";
+    __declspec(selectany) extern PCWSTR const QualifierType_AlternateForm = L"AlternateForm";
+    __declspec(selectany) extern PCWSTR const QualifierType_DXFeatureLevel = L"DXFeatureLevel";
+
+    enum class QualifierTypeIndex
+    {
+        LanguageList = 0,
+        Contrast = 1,
+        Scale = 2,
+        RegionId = 3,
+        TargetSize = 4,
+        LayoutDirection = 5,
+        Configuration = 6,
+        AlternateForm = 7,
+        DXFeatureLevel = 8,
+    };
+
+    __declspec(selectany) extern PCWSTR const Qualifier_Language = L"Language";
+    __declspec(selectany) extern PCWSTR const Qualifier_Contrast = L"Contrast";
+    __declspec(selectany) extern PCWSTR const Qualifier_Scale = L"Scale";
+    __declspec(selectany) extern PCWSTR const Qualifier_HomeRegion = L"HomeRegion";
+    __declspec(selectany) extern PCWSTR const Qualifier_TargetSize = L"TargetSize";
+    __declspec(selectany) extern PCWSTR const Qualifier_LayoutDirection = L"LayoutDirection";
+    __declspec(selectany) extern PCWSTR const Qualifier_Configuration = L"Configuration";
+    __declspec(selectany) extern PCWSTR const Qualifier_AlternateForm = L"AlternateForm";
+    __declspec(selectany) extern PCWSTR const Qualifier_DXFeatureLevel = L"DXFeatureLevel";
+
+    enum class QualifierIndex
+    {
+        Language = 0,
+        Contrast = 1,
+        Scale = 2,
+        HomeRegion = 3,
+        TargetSize = 4,
+        LayoutDirection = 5,
+        Configuration = 6,
+        AlternateForm = 7,
+        DXFeatureLevel = 8,
+    };
+
+    __declspec(selectany) extern PCWSTR const ScaleValue_100 = L"100";
+
+    __declspec(selectany) extern PCWSTR const ContrastValue_Standard = L"standard";
+    __declspec(selectany) extern PCWSTR const ContrastValue_High = L"high";
+    __declspec(selectany) extern PCWSTR const ContrastValue_Black = L"black";
+    __declspec(selectany) extern PCWSTR const ContrastValue_White = L"white";
+
+    __declspec(selectany) extern PCWSTR const
+        Qualifier_Contrast_AllowedValues[] = { ContrastValue_Standard, ContrastValue_High, ContrastValue_Black, ContrastValue_White };
+    __declspec(selectany) extern int Qualifier_Contrast_NumAllowedValues = ARRAYSIZE(Qualifier_Contrast_AllowedValues);
+
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_LTR = L"LTR";
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_RTL = L"RTL";
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_TTBLTR = L"TTBLTR";
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_TTBRTL = L"TTBRTL";
+
+    __declspec(selectany) extern PCWSTR const Qualifier_LayoutDirection_AllowedValues[] =
+    { LayoutDirectionValue_LTR, LayoutDirectionValue_RTL, LayoutDirectionValue_TTBLTR, LayoutDirectionValue_TTBRTL };
+    __declspec(selectany) extern int Qualifier_LayoutDirection_NumAllowedValues = ARRAYSIZE(Qualifier_LayoutDirection_AllowedValues);
+
+    __declspec(selectany) extern PCWSTR const HomeRegionValue_001 = L"001";
+
+    __declspec(selectany) extern PCWSTR const TargetSizeValue_256 = L"256";
+
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_9 = L"DX9";
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_10 = L"DX10";
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_11 = L"DX11";
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_12 = L"DX12";
+
+    __declspec(selectany) extern PCWSTR const Qualifier_DXFeatureLevel_AllowedValues[] =
+    { DXFeatureLevelValue_9, DXFeatureLevelValue_10, DXFeatureLevelValue_11, DXFeatureLevelValue_12 };
+    __declspec(selectany) extern int Qualifier_DXFeatureLevel_NumAllowedValues = ARRAYSIZE(Qualifier_DXFeatureLevel_AllowedValues);
+
+    __declspec(selectany) extern const int Qualifier_Scale_Min_Value = 50;
+    __declspec(selectany) extern const int Qualifier_Scale_Max_Value = 1000;
+    __declspec(selectany) extern const int Qualifier_TargetSize_Min_Value = 1;
+    __declspec(selectany) extern const int Qualifier_TargetSize_Max_Value = UINT16_MAX;
+    __declspec(selectany) extern const int Qualifier_AlternateForm_Max_Length = 32;
+    __declspec(selectany) extern const int Qualifier_Configuration_Max_Length = 8;
+
+    __declspec(selectany) extern PCWSTR const QualifierTypeNames[] = {
+        QualifierType_LanguageList,
+        QualifierType_Contrast,
+        QualifierType_Scale,
+        QualifierType_RegionId,
+        QualifierType_TargetSize,
+        QualifierType_LayoutDirection,
+        QualifierType_Configuration,
+        QualifierType_AlternateForm,
+        QualifierType_DXFeatureLevel,
+    };
+
+    __declspec(selectany) extern PCWSTR const QualifierNames[] = {
+        Qualifier_Language,
+        Qualifier_Contrast,
+        Qualifier_Scale,
+        Qualifier_HomeRegion,
+        Qualifier_TargetSize,
+        Qualifier_LayoutDirection,
+        Qualifier_Configuration,
+        Qualifier_AlternateForm,
+        Qualifier_DXFeatureLevel,
+    };
+
+    __declspec(selectany) extern Atom::SmallIndex const ClientToCoreQualifierMapping[] = {
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Language,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Contrast,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Scale,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::HomeRegion,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::TargetSize,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::LayoutDirection,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Configuration,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::AlternateForm,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::DXFeatureLevel,
+    };
+
+    __declspec(selectany) extern Atom::SmallIndex const CoreToClientQualifierMapping[] = {
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Language,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Contrast,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Scale,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::HomeRegion,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::TargetSize,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::LayoutDirection,
+        (Atom::SmallIndex)-1,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::AlternateForm,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::DXFeatureLevel,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Configuration,
+        (Atom::SmallIndex)-1,
+        (Atom::SmallIndex)-1,
+    };
+
+    __declspec(selectany) extern const int version1_0_NumQualifiers = 3;
+    __declspec(selectany) extern const int version1_0_NumQualifierTypes = 3;
+    __declspec(selectany) extern const int version1_0_NumResourceValueTypes = 2;
+
+    __declspec(selectany) extern const int version1_1_NumQualifiers = 7;
+    __declspec(selectany) extern const int version1_1_NumQualifierTypes = 7;
+    __declspec(selectany) extern const int version1_1_NumResourceValueTypes = 2;
+
+    __declspec(selectany) extern const int version1_2_NumQualifiers = 8;
+    __declspec(selectany) extern const int version1_2_NumQualifierTypes = 8;
+    __declspec(selectany) extern const int version1_2_NumResourceValueTypes = 2;
+
+    __declspec(selectany) extern const int version1_3_NumQualifiers = 8;
+    __declspec(selectany) extern const int version1_3_NumQualifierTypes = 8;
+    __declspec(selectany) extern const int version1_3_NumResourceValueTypes = 3;
+
+    __declspec(selectany) extern const int version1_4_NumQualifiers = 9;
+    __declspec(selectany) extern const int version1_4_NumQualifierTypes = 9;
+    __declspec(selectany) extern const int version1_4_NumResourceValueTypes = 3;
+
+    __declspec(selectany) extern const int NoBaseEnvironment = -1;
+
+} // namespace WindowsClientEnvironment
+
+namespace WindowsPhoneEnvironment
+{
+
+    __declspec(selectany) extern PCWSTR const PlatformName = L"WindowsPhone";
+    __declspec(selectany) extern PCWSTR const EnvironmentSimpleName = L"WindowsPhone";
+    __declspec(selectany) extern PCWSTR const EnvironmentUniqueName = L"win://WindowsPhone/1";
+
+    __declspec(selectany) extern const int MajorVersion = 1;
+    __declspec(selectany) extern const int MinorVersion = 1;
+
+    __declspec(selectany) extern PCWSTR const DefaultPlatformVersion = L"6.3.1";
+
+    __declspec(selectany) extern PCWSTR const QualifierType_LanguageList = L"LanguageList";
+    __declspec(selectany) extern PCWSTR const QualifierType_Contrast = L"ContrastMode";
+    __declspec(selectany) extern PCWSTR const QualifierType_Scale = L"ScaleFactor";
+    __declspec(selectany) extern PCWSTR const QualifierType_RegionId = L"RegionId";
+    __declspec(selectany) extern PCWSTR const QualifierType_TargetSize = L"TargetSizeValue";
+    __declspec(selectany) extern PCWSTR const QualifierType_LayoutDirection = L"LayoutDirectionValue";
+    __declspec(selectany) extern PCWSTR const QualifierType_Configuration = L"Configuration";
+    __declspec(selectany) extern PCWSTR const QualifierType_AlternateForm = L"AlternateForm";
+    __declspec(selectany) extern PCWSTR const QualifierType_DXFeatureLevel = L"DXFeatureLevel";
+
+    enum class QualifierTypeIndex
+    {
+        LanguageList = 0,
+        Contrast = 1,
+        Scale = 2,
+        RegionId = 3,
+        TargetSize = 4,
+        LayoutDirection = 5,
+        Configuration = 6,
+        AlternateForm = 7,
+        DXFeatureLevel = 8,
+    };
+
+    __declspec(selectany) extern PCWSTR const Qualifier_Language = L"Language";
+    __declspec(selectany) extern PCWSTR const Qualifier_Contrast = L"Contrast";
+    __declspec(selectany) extern PCWSTR const Qualifier_Scale = L"Scale";
+    __declspec(selectany) extern PCWSTR const Qualifier_HomeRegion = L"HomeRegion";
+    __declspec(selectany) extern PCWSTR const Qualifier_TargetSize = L"TargetSize";
+    __declspec(selectany) extern PCWSTR const Qualifier_LayoutDirection = L"LayoutDirection";
+    __declspec(selectany) extern PCWSTR const Qualifier_Configuration = L"Configuration";
+    __declspec(selectany) extern PCWSTR const Qualifier_AlternateForm = L"AlternateForm";
+    __declspec(selectany) extern PCWSTR const Qualifier_DXFeatureLevel = L"DXFeatureLevel";
+
+    enum class QualifierIndex
+    {
+        Language = 0,
+        Contrast = 1,
+        Scale = 2,
+        HomeRegion = 3,
+        TargetSize = 4,
+        LayoutDirection = 5,
+        Configuration = 6,
+        AlternateForm = 7,
+        DXFeatureLevel = 8,
+    };
+
+    __declspec(selectany) extern PCWSTR const ScaleValue_100 = L"100";
+
+    __declspec(selectany) extern PCWSTR const ContrastValue_Standard = L"standard";
+    __declspec(selectany) extern PCWSTR const ContrastValue_High = L"high";
+    __declspec(selectany) extern PCWSTR const ContrastValue_Black = L"black";
+    __declspec(selectany) extern PCWSTR const ContrastValue_White = L"white";
+
+    __declspec(selectany) extern PCWSTR const
+        Qualifier_Contrast_AllowedValues[] = { ContrastValue_Standard, ContrastValue_High, ContrastValue_Black, ContrastValue_White };
+    __declspec(selectany) extern int Qualifier_Contrast_NumAllowedValues = ARRAYSIZE(Qualifier_Contrast_AllowedValues);
+
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_LTR = L"LTR";
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_RTL = L"RTL";
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_TTBLTR = L"TTBLTR";
+    __declspec(selectany) extern PCWSTR const LayoutDirectionValue_TTBRTL = L"TTBRTL";
+
+    __declspec(selectany) extern PCWSTR const Qualifier_LayoutDirection_AllowedValues[] =
+    { LayoutDirectionValue_LTR, LayoutDirectionValue_RTL, LayoutDirectionValue_TTBLTR, LayoutDirectionValue_TTBRTL };
+    __declspec(selectany) extern int Qualifier_LayoutDirection_NumAllowedValues = ARRAYSIZE(Qualifier_LayoutDirection_AllowedValues);
+
+    __declspec(selectany) extern PCWSTR const HomeRegionValue_001 = L"001";
+
+    __declspec(selectany) extern PCWSTR const TargetSizeValue_256 = L"256";
+
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_9 = L"DX9";
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_10 = L"DX10";
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_11 = L"DX11";
+    __declspec(selectany) extern PCWSTR const DXFeatureLevelValue_12 = L"DX12";
+
+    __declspec(selectany) extern PCWSTR const Qualifier_DXFeatureLevel_AllowedValues[] =
+    { DXFeatureLevelValue_9, DXFeatureLevelValue_10, DXFeatureLevelValue_11, DXFeatureLevelValue_12 };
+    __declspec(selectany) extern int Qualifier_DXFeatureLevel_NumAllowedValues = ARRAYSIZE(Qualifier_DXFeatureLevel_AllowedValues);
+
+    __declspec(selectany) extern const int Qualifier_Scale_Min_Value = 50;
+    __declspec(selectany) extern const int Qualifier_Scale_Max_Value = 1000;
+    __declspec(selectany) extern const int Qualifier_TargetSize_Min_Value = 1;
+    __declspec(selectany) extern const int Qualifier_TargetSize_Max_Value = UINT16_MAX;
+    __declspec(selectany) extern const int Qualifier_AlternateForm_Max_Length = 32;
+    __declspec(selectany) extern const int Qualifier_Configuration_Max_Length = 8;
+
+    __declspec(selectany) extern PCWSTR const QualifierTypeNames[] = {
+        QualifierType_LanguageList,
+        QualifierType_Contrast,
+        QualifierType_Scale,
+        QualifierType_RegionId,
+        QualifierType_TargetSize,
+        QualifierType_LayoutDirection,
+        QualifierType_Configuration,
+        QualifierType_AlternateForm,
+        QualifierType_DXFeatureLevel,
+    };
+
+    __declspec(selectany) extern PCWSTR const QualifierNames[] = {
+        Qualifier_Language,
+        Qualifier_Contrast,
+        Qualifier_Scale,
+        Qualifier_HomeRegion,
+        Qualifier_TargetSize,
+        Qualifier_LayoutDirection,
+        Qualifier_Configuration,
+        Qualifier_AlternateForm,
+        Qualifier_DXFeatureLevel,
+    };
+
+    __declspec(selectany) extern Atom::SmallIndex const PhoneToCoreQualifierMapping[] = {
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Language,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Contrast,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Scale,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::HomeRegion,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::TargetSize,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::LayoutDirection,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::Configuration,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::AlternateForm,
+        (Atom::SmallIndex)CoreEnvironment::QualifierIndex::DXFeatureLevel,
+    };
+
+    __declspec(selectany) extern Atom::SmallIndex const PhoneToClientQualifierMapping[] = {
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Language,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Contrast,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Scale,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::HomeRegion,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::TargetSize,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::LayoutDirection,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::Configuration,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::AlternateForm,
+        (Atom::SmallIndex)WindowsClientEnvironment::QualifierIndex::DXFeatureLevel,
+    };
+
+    __declspec(selectany) extern Atom::SmallIndex const CoreToPhoneQualifierMapping[] = {
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Language,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Contrast,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Scale,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::HomeRegion,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::TargetSize,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::LayoutDirection,
+        (Atom::SmallIndex)-1,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::AlternateForm,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::DXFeatureLevel,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Configuration,
+        (Atom::SmallIndex)-1,
+        (Atom::SmallIndex)-1,
+    };
+
+    __declspec(selectany) extern const int version1_0_NumQualifiers = 9;
+    __declspec(selectany) extern const int version1_0_NumQualifierTypes = 9;
+    __declspec(selectany) extern const int version1_0_NumResourceValueTypes = 3;
+
+    __declspec(selectany) extern const int version1_1_NumQualifiers = 9;
+    __declspec(selectany) extern const int version1_1_NumQualifierTypes = 9;
+    __declspec(selectany) extern const int version1_1_NumResourceValueTypes = 3;
+
+    __declspec(selectany) extern const int NoBaseEnvironment = -1;
+
+} // namespace WindowsPhoneEnvironment
+
+namespace WindowsClientEnvironment
+{
+    __declspec(selectany) extern Atom::SmallIndex const ClientToPhoneQualifierMapping[] = {
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Language,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Contrast,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Scale,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::HomeRegion,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::TargetSize,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::LayoutDirection,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::Configuration,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::AlternateForm,
+        (Atom::SmallIndex)WindowsPhoneEnvironment::QualifierIndex::DXFeatureLevel,
+    };
+}
 } // namespace Microsoft::Resources

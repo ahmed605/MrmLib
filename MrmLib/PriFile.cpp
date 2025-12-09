@@ -15,8 +15,8 @@ namespace winrt::MrmLib::implementation
 
     std::unique_ptr<mrm::CoreProfile> PriFile::s_coreProfile = []()
     {
-        mrm::CoreProfile* profile = nullptr;
-        check_hresult(mrm::CoreProfile::ChooseDefaultProfile(&profile));
+        mrm::WindowsClientProfileBase* profile = nullptr;
+        check_hresult(mrm::WindowsClientProfileBase::CreateInstance(mrm::WindowsCoreRS4, &profile));
         return std::unique_ptr<mrm::CoreProfile> { profile };
     }();
 
@@ -25,6 +25,12 @@ namespace winrt::MrmLib::implementation
     {
         if (priBytes.size())
             m_priFileBytes = std::forward<com_array<uint8_t>>(priBytes);
+
+        const mrm::BaseFile* baseFile = nullptr;
+        winrt::check_hresult(static_cast<mrm::PriFile*>(m_priFile.get())->GetBaseFile(&baseFile));
+
+        m_header = baseFile->GetFileHeader();
+        check_hresult(m_priFile->GetProfile()->GetTargetPlatformVersionForFileMagic(m_header->magic, &m_version));
 
         const mrm::IResourceMapBase* map = nullptr;
         check_hresult(m_priFile->GetResourceMap(0, &map));
@@ -44,7 +50,7 @@ namespace winrt::MrmLib::implementation
                 check_hresult(namedResource.GetResourceName(&str));
 
                 auto result = str.GetStringResult();
-                candidates.push_back(winrt::make<implementation::ResourceCandidate>(std::move(hstring(result->pRef, result->cchBuf - 1)), std::move(resCandidate), m_priFile->GetAtoms()));
+                candidates.push_back(winrt::make<implementation::ResourceCandidate>(std::move(hstring(result->pRef, result->cchBuf - 1)), std::move(resCandidate), m_priFile->GetAtoms(), m_version));
             }
         }
 
@@ -137,14 +143,9 @@ namespace winrt::MrmLib::implementation
     {
         mrm::CoreProfile* profile = s_coreProfile.get();
 
-        std::unique_ptr<mrm::CoreProfile> customProfile;
-        mrm::MrmPlatformVersionInternal platformVersion = { };
-        std::unique_ptr<mrm::MrmBuildConfiguration> buildConfig;
-        if (SUCCEEDED(mrm::CoreProfile::GetDefaultTargetPlatformVersionForFileMagic(std::bit_cast<DEFFILE_MAGIC>(Magic()), &platformVersion))
-            && SUCCEEDED(mrm::MrmBuildConfiguration::CreateInstance(platformVersion, std::out_ptr(buildConfig))))
+        std::unique_ptr<mrm::WindowsClientProfileBase> customProfile;
+        if (SUCCEEDED(mrm::WindowsClientProfileBase::CreateInstance(m_version, std::out_ptr(customProfile))))
         {
-            check_hresult(mrm::CoreProfile::ChooseDefaultProfile(std::out_ptr(customProfile)));
-            customProfile->SetBuildConfiguration(buildConfig.get());
 			profile = customProfile.get();
         }
 
@@ -342,9 +343,7 @@ namespace winrt::MrmLib::implementation
 
     uint64_t PriFile::Magic()
     {
-        const mrm::BaseFile* baseFile = nullptr;
-        winrt::check_hresult(static_cast<mrm::PriFile*>(m_priFile.get())->GetBaseFile(&baseFile));
-        return baseFile->GetFileHeader()->magic.ullMagic;
+        return m_header->magic.ullMagic;
     }
 
     #define PriFile_Magic(...) std::bit_cast<uint64_t>(std::array<BYTE, sizeof(UINT64) / sizeof(BYTE)> { __VA_ARGS__ })
@@ -390,11 +389,7 @@ namespace winrt::MrmLib::implementation
 
     winrt::MrmLib::PriVersion PriFile::Version()
     {
-        const mrm::BaseFile* baseFile = nullptr;
-        winrt::check_hresult(static_cast<mrm::PriFile*>(m_priFile.get())->GetBaseFile(&baseFile));
-        auto header = baseFile->GetFileHeader();
-
-        return { header->majorVersion, header->minorVersion };
+        return { m_header->majorVersion, m_header->minorVersion };
     }
 
     uint32_t PriFile::Checksum()

@@ -13,6 +13,7 @@
 #include "mrm/build/SectionBuilders.h"
 #include "mrm/build/HNamesBuilder.h"
 #include "mrm/platform/WindowsCore.h"
+#include "mrm/platform/WindowsClient.h"
 
 namespace Microsoft::Resources
 {

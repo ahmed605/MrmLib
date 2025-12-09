@@ -28,6 +28,8 @@ namespace winrt::MrmLib::implementation
         hstring m_simpleId;
 		hstring m_uniqueId;
         uint32_t m_checksum;
+		const DEFFILE_HEADER* m_header;
+		mrm::MrmPlatformVersionInternal m_version;
 		bool m_idsChanged { false };
 
     public:

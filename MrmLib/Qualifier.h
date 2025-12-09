@@ -33,7 +33,7 @@ namespace winrt::MrmLib::implementation
 
     public:
         Qualifier() = default;
-		Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup);
+		Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup, mrm::MrmPlatformVersionInternal version);
 		Qualifier(QualifierAttribute const& attribute, QualifierOperator const& _operator, hstring const& qualifierValue, int32_t priority, double fallbackScore);
 
         static winrt::MrmLib::Qualifier Create(winrt::MrmLib::QualifierAttribute const& qualifierAttribute, winrt::MrmLib::QualifierOperator const& _operator, hstring const& qualifierValue, int32_t priority, double fallbackScore);

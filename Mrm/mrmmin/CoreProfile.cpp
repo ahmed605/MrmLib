@@ -157,7 +157,8 @@ HRESULT CoreProfile::GetEnvironmentVersionInfo(
 
 HRESULT CoreProfile::CreateEnvironment(_In_ int index, _In_ AtomPoolGroup* pAtoms, _Outptr_ IEnvironment** enviroment) const
 {
-    RETURN_IF_FAILED(MrmEnvironment::CreateInstance(pAtoms, m_initializer, index, (MrmEnvironment**)enviroment));
+    //RETURN_IF_FAILED(MrmEnvironment::CreateInstance(pAtoms, m_initializer, index, (MrmEnvironment**)enviroment));
+    RETURN_IF_FAILED(MrmEnvironment::CreateInstance(pAtoms, m_initializer, index ? index : 1, (MrmEnvironment**)enviroment));
     return S_OK;
 }
 

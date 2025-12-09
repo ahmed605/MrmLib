@@ -270,6 +270,7 @@
     <ClInclude Include="..\include\mrm\platform\base.h" />
     <ClInclude Include="..\include\mrm\platform\CoreQualifierTypes.h" />
     <ClInclude Include="..\include\mrm\platform\MrmConstants.h" />
+    <ClInclude Include="..\include\mrm\platform\WindowsClient.h" />
     <ClInclude Include="..\include\mrm\platform\WindowsCore.h" />
     <ClInclude Include="..\include\mrm\readers\Atoms.h" />
     <ClInclude Include="..\include\mrm\readers\BaseFile.h" />
@@ -312,6 +313,7 @@
     <ClCompile Include="ManagedFiles.cpp" />
     <ClCompile Include="Managers.cpp" />
     <ClCompile Include="MrmFile.cpp" />
+    <ClCompile Include="MrmProfile.cpp" />
     <ClCompile Include="MrmTraceLogging.cpp" />
     <ClCompile Include="Platform.cpp" />
     <ClCompile Include="PriFile.cpp" />
@@ -328,6 +330,7 @@
     <ClCompile Include="StringResultImpl.cpp" />
     <ClCompile Include="UnifiedView.cpp" />
     <ClCompile Include="Util.cpp" />
+    <ClCompile Include="WindowsClientEnvironment.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

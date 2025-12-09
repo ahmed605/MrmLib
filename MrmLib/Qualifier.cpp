@@ -4,22 +4,22 @@
 
 namespace winrt::MrmLib::implementation
 {
-    Qualifier::Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup)
+    Qualifier::Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup, mrm::MrmPlatformVersionInternal version)
     {
         mrm::Atom attribute;
         check_hresult(qualifier.GetOperand1Attribute(&attribute));
-        m_attribute = static_cast<QualifierAttribute>(attribute.GetIndex());
+        check_hresult(mrm::WindowsClientProfileBase::RemapQualifierIndexToCore(version, attribute, reinterpret_cast<mrm::CoreEnvironment::QualifierIndex*>(&m_attribute)));
 
         if (m_attribute == QualifierAttribute::Custom)
         {
-		    mrm::StringResult strResult;
+            mrm::StringResult strResult;
             check_hresult(pPoolGroup->GetString(attribute, &strResult));
-			auto result = strResult.GetStringResult();
-			m_attributeName = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
+            auto result = strResult.GetStringResult();
+            m_attributeName = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
         }
         else
         {
-			m_attributeName = mrm::CoreEnvironment::QualifierNames[(int)m_attribute];
+            m_attributeName = mrm::CoreEnvironment::QualifierNames[(int)m_attribute];
         }
 
         if (!qualifier.OperatorIsCustom()) [[likely]]
@@ -38,7 +38,7 @@ namespace winrt::MrmLib::implementation
             mrm::StringResult strResult;
             check_hresult(pPoolGroup->GetString(op, &strResult));
             auto result = strResult.GetStringResult();
-			m_customOperator = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
+            m_customOperator = result->cchBuf ? hstring(result->pRef, result->cchBuf - 1) : hstring(result->pRef);
         }
 
         mrm::StringResult strResult;

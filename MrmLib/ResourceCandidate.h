@@ -41,7 +41,7 @@ namespace winrt::MrmLib::implementation
 		bool HasCustomQualifiers = false;
 
         ResourceCandidate() = default;
-        ResourceCandidate(hstring&& resourceName, mrm::ResourceCandidateResult&& candidate, mrm::AtomPoolGroup* pPoolGroup);
+        ResourceCandidate(hstring&& resourceName, mrm::ResourceCandidateResult&& candidate, mrm::AtomPoolGroup* pPoolGroup, mrm::MrmPlatformVersionInternal version);
         ResourceCandidate(hstring const& resourceName, ResourceValueType const& valueType, hstring const& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers);
         ResourceCandidate(hstring const& resourceName, array_view<uint8_t const>& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers);
 
