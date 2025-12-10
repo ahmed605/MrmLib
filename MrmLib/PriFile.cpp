@@ -146,7 +146,7 @@ namespace winrt::MrmLib::implementation
         std::unique_ptr<mrm::WindowsClientProfileBase> customProfile;
         if (SUCCEEDED(mrm::WindowsClientProfileBase::CreateInstance(m_version, std::out_ptr(customProfile))))
         {
-			profile = customProfile.get();
+            profile = customProfile.get();
         }
 
         std::unique_ptr<mrm::PriFileBuilder> priFileBuilder;
@@ -187,7 +187,7 @@ namespace winrt::MrmLib::implementation
         auto sourceEnvironment = m_priFile->GetUnifiedEnvironment()->GetDefaultEnvironment();
 
         int numMappedQualifiers = 0;
-		const PCWSTR* mappedQualifierNames = nullptr;
+        const PCWSTR* mappedQualifierNames = nullptr;
         const mrm::Atom::SmallIndex* qualiferMappings = nullptr;
         LOG_IF_FAILED(s_coreProfile->GetQualifierInfoForEnvironment(
             sourceEnvironment->GetDisplayName(),
@@ -334,13 +334,17 @@ namespace winrt::MrmLib::implementation
         DataWriter writer(destinationStream);
         writer.WriteBytes(bytes);
         co_await writer.StoreAsync();
+        co_await destinationStream.FlushAsync();
+        writer.Close();
 
         co_return;
     }
 
     winrt::Windows::Foundation::IAsyncAction PriFile::WriteAsync(winrt::Windows::Storage::StorageFile destinationFile)
     {
-        co_await WriteAsync(co_await destinationFile.OpenAsync(FileAccessMode::ReadWrite));
+        auto const& stream = co_await destinationFile.OpenAsync(FileAccessMode::ReadWrite);
+        co_await WriteAsync(stream);
+        stream.Close();
         co_return;
     }
 
