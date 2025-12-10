@@ -50,7 +50,7 @@ namespace winrt::MrmLib::implementation
                 check_hresult(namedResource.GetResourceName(&str));
 
                 auto result = str.GetStringResult();
-                candidates.push_back(winrt::make<implementation::ResourceCandidate>(std::move(hstring(result->pRef, result->cchBuf - 1)), std::move(resCandidate), m_priFile->GetAtoms(), m_version));
+                candidates.push_back(winrt::make<implementation::ResourceCandidate>(std::move(hstring(result->pRef, result->cchBuf - 1)), std::move(resCandidate), m_priFile->GetAtoms()));
             }
         }
 
@@ -184,6 +184,19 @@ namespace winrt::MrmLib::implementation
             check_pointer(mapBuilder);
         }
 
+        auto sourceEnvironment = m_priFile->GetUnifiedEnvironment()->GetDefaultEnvironment();
+
+        int numMappedQualifiers = 0;
+		const PCWSTR* mappedQualifierNames = nullptr;
+        const mrm::Atom::SmallIndex* qualiferMappings = nullptr;
+        LOG_IF_FAILED(s_coreProfile->GetQualifierInfoForEnvironment(
+            sourceEnvironment->GetDisplayName(),
+            sourceEnvironment->GetVersionInfo(),
+            priSectionBuilder->GetEnvironment()->GetDefaultEnvironment(),
+            &numMappedQualifiers,
+            &mappedQualifierNames,
+            &qualiferMappings));
+
         mrm::RemapUInt16 qualifierMap;
         mrm::RemapUInt16 qualifierSetMap;
         mrm::RemapUInt16 decisionMap;
@@ -191,7 +204,7 @@ namespace winrt::MrmLib::implementation
         //auto environment = mapBuilder->GetEnvironment();
         auto decisions = mapBuilder->GetDecisionInfo();
         auto decisionInfo = map->GetDecisionInfo();
-        check_hresult(decisions->Merge(decisionInfo, &qualifierMap, &qualifierSetMap, &decisionMap));
+        check_hresult(decisions->Merge(decisionInfo, &qualifierMap, &qualifierSetMap, &decisionMap, qualiferMappings));
 
         int qualifierSetIndex = 0;
         uint16_t remappedQualifierSetIndex = 0;
@@ -229,7 +242,7 @@ namespace winrt::MrmLib::implementation
                     {
                         auto stringValue = qualifier.Value();
                         auto attributeName = qualifier.AttributeName();
-                        check_hresult(customQualifierSet->AddQualifier(
+                        LOG_IF_FAILED(customQualifierSet->AddQualifier(
                             attributeName.c_str(),
                             stringValue.c_str(),
                             qualifier.Priority(),

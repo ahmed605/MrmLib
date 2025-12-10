@@ -107,6 +107,18 @@ namespace Microsoft::Resources
         {
             if (DefString_ICompare(sourceName, CoreEnvironment::EnvironmentSimpleName) == Def_Equal)
             {
+				auto targetVersion = targetEnvironment->GetVersionInfo();
+				auto sourceMajor = sourceVersion->GetMajorVersion();
+				auto sourceMinor = sourceVersion->GetMinorVersion();
+				auto targetMajor = targetVersion->GetMajorVersion();
+				auto targetMinor = targetVersion->GetMinorVersion();
+
+                if (sourceMajor == targetMajor == 1 && sourceMinor != 0 && targetMinor != 0)
+                {
+					static_assert(CoreEnvironment::MajorVersion == 1 && CoreEnvironment::MinorVersion == 2, "Update this when new Core versions are added.");
+                    return S_OK;
+                }
+
                 return CoreProfile::GetQualifierInfoForEnvironment(
                     sourceName,
                     sourceVersion,

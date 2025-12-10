@@ -4,11 +4,11 @@
 
 namespace winrt::MrmLib::implementation
 {
-    Qualifier::Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup, mrm::MrmPlatformVersionInternal version)
+    Qualifier::Qualifier(mrm::QualifierResult&& qualifier, mrm::AtomPoolGroup* pPoolGroup)
     {
         mrm::Atom attribute;
         check_hresult(qualifier.GetOperand1Attribute(&attribute));
-        check_hresult(mrm::WindowsClientProfileBase::RemapQualifierIndexToCore(version, attribute, reinterpret_cast<mrm::CoreEnvironment::QualifierIndex*>(&m_attribute)));
+        m_attribute = (QualifierAttribute)attribute.GetIndex();
 
         if (m_attribute == QualifierAttribute::Custom)
         {

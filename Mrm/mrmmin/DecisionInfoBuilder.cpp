@@ -268,7 +268,8 @@ HRESULT DecisionInfoBuilder::Merge(
     _In_ const IDecisionInfo* pMerge,
     _Inout_opt_ RemapUInt16* pQualifierMapOpt,
     _Inout_opt_ RemapUInt16* pQualifierSetMapOpt,
-    _Inout_opt_ RemapUInt16* pDecisionMapOpt)
+    _Inout_opt_ RemapUInt16* pDecisionMapOpt,
+    _In_opt_ const Atom::SmallIndex* pQualiferMappings)
 {
     QualifierResult qualifier;
     int index;
@@ -318,7 +319,7 @@ HRESULT DecisionInfoBuilder::Merge(
     for (int i = 1; i < pMerge->GetNumQualifiers(); i++)
     {
         RETURN_IF_FAILED(pMerge->GetQualifier(i, &qualifier));
-        RETURN_IF_FAILED(GetOrAddQualifier(&qualifier, &index));
+        RETURN_IF_FAILED(GetOrAddQualifier(&qualifier, &index, pQualiferMappings));
         if (!pQualifierMapUsed->TrySetMapping(static_cast<UINT16>(i), static_cast<UINT16>(index)))
         {
             return HRESULT_FROM_WIN32(ERROR_MRM_MAP_NOT_FOUND);
@@ -360,7 +361,8 @@ HRESULT DecisionInfoBuilder::GetOrAddQualifier(
     _In_opt_ PCWSTR pValue,
     _In_ UINT16 priority,
     _In_ double fallbackScore,
-    _Inout_opt_ QualifierResult* pQualifierOut)
+    _Inout_opt_ QualifierResult* pQualifierOut,
+    _In_opt_ const Atom::SmallIndex* pQualiferMappings)
 {
     DEF_ATOM_SMALL attrNameSmall = {};
     int baseIndex = -1;
@@ -384,6 +386,11 @@ HRESULT DecisionInfoBuilder::GetOrAddQualifier(
     else if (op == IQualifier::FalseOp)
     {
         return HRESULT_FROM_WIN32(ERROR_MRM_INVALID_QUALIFIER_OPERATOR);
+    }
+
+    if (pQualiferMappings && attrName.GetIndex() >= 0)
+    {
+        attrName.Set(pQualiferMappings[attrName.GetIndex()], attrName.GetPoolIndex());
     }
 
     if (!attrName.TryGetSmallAtom(&attrNameSmall))
@@ -527,7 +534,7 @@ HRESULT DecisionInfoBuilder::GetOrAddQualifier(
     return S_OK;
 }
 
-HRESULT DecisionInfoBuilder::GetOrAddQualifier(_In_ const IQualifier* pQualifier, _Out_opt_ int* pIndexOut)
+HRESULT DecisionInfoBuilder::GetOrAddQualifier(_In_ const IQualifier* pQualifier, _Out_opt_ int* pIndexOut, _In_opt_ const Atom::SmallIndex* pQualiferMappings)
 {
     Atom qualifierName;
     ICondition::ConditionOperator op;
@@ -541,7 +548,7 @@ HRESULT DecisionInfoBuilder::GetOrAddQualifier(_In_ const IQualifier* pQualifier
     double fallbackScore;
     RETURN_IF_FAILED(pQualifier->GetFallbackScore(&fallbackScore));
     RETURN_IF_FAILED(
-        GetOrAddQualifier(qualifierName, op, value.GetRef(), static_cast<UINT16>(pQualifier->GetPriority()), fallbackScore, &result));
+        GetOrAddQualifier(qualifierName, op, value.GetRef(), static_cast<UINT16>(pQualifier->GetPriority()), fallbackScore, &result, pQualiferMappings));
     if (pIndexOut != nullptr)
     {
         RETURN_IF_FAILED(result.GetQualifierIndex(pIndexOut));

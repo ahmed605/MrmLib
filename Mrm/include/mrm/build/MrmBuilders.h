@@ -895,7 +895,8 @@ public:
         _In_ const IDecisionInfo* pMerge,
         _Inout_opt_ RemapUInt16* pQualifierMap = nullptr,
         _Inout_opt_ RemapUInt16* pQualifierSetMap = nullptr,
-        _Inout_opt_ RemapUInt16* pDecisionMap = nullptr);
+        _Inout_opt_ RemapUInt16* pDecisionMap = nullptr,
+        _In_opt_ const Atom::SmallIndex* pQualiferMappings = nullptr);
 
     const UnifiedEnvironment* GetEnvironment() const;
 
@@ -905,7 +906,8 @@ public:
         _In_opt_ PCWSTR pQualifierValue,
         _In_ UINT16 priority,
         _In_ double fallbackScore,
-        _Inout_opt_ QualifierResult* pQualifierOut = nullptr);
+        _Inout_opt_ QualifierResult* pQualifierOut = nullptr,
+        _In_opt_ const Atom::SmallIndex* pQualiferMappings = nullptr);
 
     HRESULT GetOrAddQualifier(
         _In_opt_ PCWSTR pQualifierName,
@@ -933,7 +935,7 @@ public:
         _In_ double fallbackScore,
         _Inout_opt_ QualifierResult* pQualifierOut = nullptr);
 
-    HRESULT GetOrAddQualifier(_In_ const IQualifier* pQualifier, _Out_opt_ int* pIndexOut);
+    HRESULT GetOrAddQualifier(_In_ const IQualifier* pQualifier, _Out_opt_ int* pIndexOut, _In_opt_ const Atom::SmallIndex* pQualiferMappings = nullptr);
 
     int GetNumQualifiers() const;
 
