@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>MrmLib</id>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <title>MrmLib</title>
     <authors>Ahmed605</authors>
     <owners>Ahmed605,Ahmed Walid</owners>
@@ -12,7 +12,7 @@
     <projectUrl>https://github.com/ahmed605/MrmLib</projectUrl>
     <repository type="git" url="https://github.com/ahmed605/MrmLib.git"/>
     <description>WinRT Component library for working with PRI files, it can be used to read and modify resources in PRI files.</description>
-    <releaseNotes>Initial release.</releaseNotes>
+    <releaseNotes>Added support for Windows 8, Windows 8.1, and Windows Phone 8.1 PRI files.</releaseNotes>
     <tags>MrmLib MRM MRT MRTCore PRI Resources XAML WinRT UWP Universal Windows Platform UAP WinUI</tags>
     <readme>docs\README.md</readme>
     <dependencies>

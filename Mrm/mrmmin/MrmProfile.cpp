@@ -218,20 +218,6 @@ namespace Microsoft::Resources
         return S_OK;
     }
 
-    class RtlLanguageListQualifierType : public QualifierTypeBase
-    {
-    public:
-        static HRESULT CreateInstance(_Outptr_ RtlLanguageListQualifierType** type);
-        virtual ~RtlLanguageListQualifierType();
-        HRESULT ValidateSingleQualifierValue(_In_ PCWSTR pValue) const override;
-        double EvaluateSingleQualifierValue(_In_ PCWSTR valueOnAsset, _In_ PCWSTR valueFromProvider) const override;
-        HRESULT Evaluate(_In_ const IQualifier* pQualifier, _In_ PCWSTR pszProviderValue, _Out_ double* score) const override;
-        int GetMaxQualifierEntries() const override;
-
-    protected:
-        RtlLanguageListQualifierType();
-    };
-
     WindowsClientProfileBase::~WindowsClientProfileBase()
     {
         // TODO

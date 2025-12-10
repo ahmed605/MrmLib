@@ -98,75 +98,70 @@ protected:
 // NOTE:  The current implementation of the language list qualifier type is bogus.  It doesn't actually do
 // anything language-tag specific yet.
 
-class RtlLanguageListQualifierType : public QualifierTypeBase
+RtlLanguageListQualifierType::RtlLanguageListQualifierType() : QualifierTypeBase(ListValuesAllowed | EmptyValuesNotAllowed) {}
+
+HRESULT RtlLanguageListQualifierType::CreateInstance(_Outptr_ RtlLanguageListQualifierType** type)
 {
-public:
-    static HRESULT CreateInstance(_Outptr_ RtlLanguageListQualifierType** type)
+    *type = nullptr;
+
+    RtlLanguageListQualifierType* pRtrn = new RtlLanguageListQualifierType();
+    RETURN_IF_NULL_ALLOC(pRtrn);
+
+    *type = pRtrn;
+
+    return S_OK;
+}
+
+int RtlLanguageListQualifierType::GetMaxQualifierEntries() const { return 256; }
+
+RtlLanguageListQualifierType::~RtlLanguageListQualifierType() {}
+
+HRESULT RtlLanguageListQualifierType::ValidateSingleQualifierValue(_In_ PCWSTR pValue) const
+{
+    if ((pValue == nullptr) || (*pValue == L'\0') || !_DefIsWellFormedTag(pValue))
     {
-        *type = nullptr;
-
-        RtlLanguageListQualifierType* pRtrn = new RtlLanguageListQualifierType();
-        RETURN_IF_NULL_ALLOC(pRtrn);
-
-        *type = pRtrn;
-
-        return S_OK;
+        return HRESULT_FROM_WIN32(ERROR_MRM_INVALID_QUALIFIER_VALUE);
     }
 
-    virtual ~RtlLanguageListQualifierType() {}
+    return S_OK;
+}
 
-    HRESULT ValidateSingleQualifierValue(_In_ PCWSTR pValue) const override
+double RtlLanguageListQualifierType::EvaluateSingleQualifierValue(_In_ PCWSTR valueOnAsset, _In_ PCWSTR valueFromProvider) const
+{
+    double result = 0.0;
+
+    // Same value -> 1
+    // Same value, but the provider value is a neutral -> 0.5, as we want to score a full match higher than a neutral.
+    // Different value -> 0
+    // This is not a full BCP47 distance match implementation, and will not match say en-GB and en-US.
+    if (DefString_ICompare(valueOnAsset, valueFromProvider) == Def_Equal)
     {
-        if ((pValue == nullptr) || (*pValue == L'\0') || !_DefIsWellFormedTag(pValue))
+        result = wcslen(valueOnAsset) > 3 ? 1.0 : 0.5;
+    }
+
+    return result;
+}
+
+HRESULT RtlLanguageListQualifierType::Evaluate(_In_ const IQualifier* pQualifier, _In_ PCWSTR pszProviderValue, _Out_ double* score) const
+{
+    *score = 0.0;
+
+    if (wcslen(pszProviderValue) > 0)
+    {
+        StringResult qualifierValue;
+        RETURN_IF_FAILED(ValidateQualifier(pQualifier));
+        RETURN_IF_FAILED(pQualifier->GetOperand2Literal(&qualifierValue));
+
+        (void)_DefGetDistanceOfClosestLanguageInList(qualifierValue.GetRef(), pszProviderValue, L';', score);
+        if (*score < 0.0)
         {
-            return HRESULT_FROM_WIN32(ERROR_MRM_INVALID_QUALIFIER_VALUE);
+            // Not evaluated by previous function. Use base method.
+            RETURN_IF_FAILED(QualifierTypeBase::Evaluate(pQualifier, pszProviderValue, score));
         }
-
-        return S_OK;
     }
 
-    double EvaluateSingleQualifierValue(_In_ PCWSTR valueOnAsset, _In_ PCWSTR valueFromProvider) const override
-    {
-        double result = 0.0;
-
-        // Same value -> 1
-        // Same value, but the provider value is a neutral -> 0.5, as we want to score a full match higher than a neutral.
-        // Different value -> 0
-        // This is not a full BCP47 distance match implementation, and will not match say en-GB and en-US.
-        if (DefString_ICompare(valueOnAsset, valueFromProvider) == Def_Equal)
-        {
-            result = wcslen(valueOnAsset) > 3 ? 1.0 : 0.5;
-        }
-
-        return result;
-    }
-
-    HRESULT Evaluate(_In_ const IQualifier* pQualifier, _In_ PCWSTR pszProviderValue, _Out_ double* score) const override
-    {
-        *score = 0.0;
-
-        if (wcslen(pszProviderValue) > 0)
-        {
-            StringResult qualifierValue;
-            RETURN_IF_FAILED(ValidateQualifier(pQualifier));
-            RETURN_IF_FAILED(pQualifier->GetOperand2Literal(&qualifierValue));
-
-            (void)_DefGetDistanceOfClosestLanguageInList(qualifierValue.GetRef(), pszProviderValue, L';', score);
-            if (*score < 0.0)
-            {
-                // Not evaluated by previous function. Use base method.
-                RETURN_IF_FAILED(QualifierTypeBase::Evaluate(pQualifier, pszProviderValue, score));
-            }
-        }
-
-        return S_OK;
-    }
-
-    int GetMaxQualifierEntries() const override { return 256; }
-
-protected:
-    RtlLanguageListQualifierType() : QualifierTypeBase(ListValuesAllowed | EmptyValuesNotAllowed) {}
-};
+    return S_OK;
+}
 
 HRESULT
 RtlProfile::GetTypeForQualifier(_In_ const IEnvironment* pEnvironment, _In_ Atom qualifierAtom, _Out_ IBuildQualifierType** ppTypeOut) const
