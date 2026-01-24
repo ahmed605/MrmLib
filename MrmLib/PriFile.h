@@ -45,10 +45,15 @@ namespace winrt::MrmLib::implementation
         winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::ReplacePathCandidatesWithEmbeddedDataResult> ReplacePathCandidatesWithEmbeddedDataAsync(winrt::Windows::Storage::StorageFolder sourceFolderToEmbed);
         winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::ReplacePathCandidatesWithEmbeddedDataResult> ReplacePathCandidatesWithEmbeddedDataAsync(hstring sourceFolderPathToEmbed);
 
+        void WriteInternal(void (*pCallback)(array_view<uint8_t const>&& priBytes, void* context), void* context);
+
         com_array<uint8_t> Write();
+        winrt::Windows::Storage::Streams::IBuffer WriteAsBuffer();
+        winrt::Windows::Foundation::IAsyncOperation<winrt::Windows::Storage::Streams::IBuffer> WriteAsBufferAsync();
         winrt::Windows::Foundation::IAsyncAction WriteAsync(hstring destinationFilePath);
         winrt::Windows::Foundation::IAsyncAction WriteAsync(winrt::Windows::Storage::StorageFile destinationFile);
         winrt::Windows::Foundation::IAsyncAction WriteAsync(winrt::Windows::Storage::Streams::IOutputStream destinationStream);
+        winrt::Windows::Foundation::IAsyncAction WriteAsync(winrt::Windows::Storage::Streams::IBuffer destinationBuffer);
 
         winrt::MrmLib::PriType Type();
         uint64_t Magic();

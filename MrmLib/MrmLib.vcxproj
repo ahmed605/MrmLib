@@ -122,7 +122,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <ModuleDefinitionFile>MrmLib.def</ModuleDefinitionFile>
-	  <AppContainer>false</AppContainer>
+      <AppContainer>false</AppContainer>
       <AdditionalLibraryDirectories Condition="'$(Platform)' == 'x64'">%(AdditionalLibraryDirectories);$(VC_LibraryPath_VC_x64_Desktop)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Platform)' == 'Win32'">%(AdditionalLibraryDirectories);$(VC_LibraryPath_VC_x86_Desktop)</AdditionalLibraryDirectories>
       <AdditionalLibraryDirectories Condition="'$(Platform)' == 'ARM'">%(AdditionalLibraryDirectories);$(VC_LibraryPath_VC_arm_Desktop)</AdditionalLibraryDirectories>
@@ -176,6 +176,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BufferView.h" />
     <ClInclude Include="namespaces.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PriFile.h" />

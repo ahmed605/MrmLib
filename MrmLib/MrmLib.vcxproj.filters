@@ -24,6 +24,7 @@
     <ClInclude Include="ResourceCandidate.h" />
     <ClInclude Include="namespaces.h" />
     <ClInclude Include="Qualifier.h" />
+    <ClInclude Include="BufferView.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MrmLib.def" />

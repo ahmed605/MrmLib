@@ -39,5 +39,14 @@ namespace MrmLib
             [method_name("SetValueWithDataBytes")]
             void SetValue(UInt8[] value);
         }
+
+        [interface_name("IResourceCandidate2", 159CB3A8-2243-4636-AACE-B262E54E7395)]
+        {
+            Windows.Storage.Streams.IBuffer DataValueBuffer { get; set; };
+            Windows.Storage.Streams.IBuffer DataValueReference { get; };
+
+            [method_name("SetValueWithDataBuffer")]
+            void SetValue(Windows.Storage.Streams.IBuffer value);
+        }
     }
 }

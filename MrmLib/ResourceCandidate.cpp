@@ -2,14 +2,15 @@
 #include "ResourceCandidate.h"
 #include "ResourceCandidate.g.cpp"
 #include <Qualifier.h>
+#include "BufferView.h"
 
 namespace winrt::MrmLib::implementation
 {
     using namespace ::winrt::Windows::Foundation;
 
     ResourceCandidate::ResourceCandidate(hstring&& resourceName, mrm::ResourceCandidateResult&& candidate, mrm::AtomPoolGroup* pPoolGroup) :
-        m_resourceName(std::forward<hstring>(resourceName)),
-        Candidate(std::forward<mrm::ResourceCandidateResult>(candidate))
+        m_resourceName(std::move(resourceName)),
+        Candidate(std::move(candidate))
     {
         mrm::MrmEnvironment::ResourceValueType valueType = { };
         check_hresult(Candidate.GetResourceValueType(&valueType));
@@ -61,21 +62,21 @@ namespace winrt::MrmLib::implementation
 
     ResourceCandidate::ResourceCandidate(hstring const& resourceName, ResourceValueType const& valueType, hstring const& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers)
     {
-		m_resourceName = resourceName;
-		SetValue(valueType, value);
-		Qualifiers(qualifiers);
+        m_resourceName = resourceName;
+        SetValue(valueType, value);
+        Qualifiers(qualifiers);
     }
 
     ResourceCandidate::ResourceCandidate(hstring const& resourceName, array_view<uint8_t const>& value, IVectorView<winrt::MrmLib::Qualifier> const& qualifiers)
     {
-		m_resourceName = resourceName;
-		SetValue(value);
-		Qualifiers(qualifiers);
+        m_resourceName = resourceName;
+        SetValue(value);
+        Qualifiers(qualifiers);
     }
 
     winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue)
     {
-		return winrt::make<implementation::ResourceCandidate>(resourceName, valueType, stringValue, nullptr);
+        return winrt::make<implementation::ResourceCandidate>(resourceName, valueType, stringValue, nullptr);
     }
 
     winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue, array_view<winrt::MrmLib::Qualifier const> qualifiers)
@@ -117,10 +118,10 @@ namespace winrt::MrmLib::implementation
     {
         if (value == ResourceValueType::EmbeddedData && !m_replacementDataValue.size()) [[unlikely]]
         {
-			throw hresult_invalid_argument(L"ValueType cannot be set to EmbeddedData without setting DataValue first.");
+            throw hresult_invalid_argument(L"ValueType cannot be set to EmbeddedData without setting DataValue first.");
         }
 
-		m_replacementValueType = value;
+        m_replacementValueType = value;
     }
 
     IInspectable ResourceCandidate::Value()
@@ -166,6 +167,42 @@ namespace winrt::MrmLib::implementation
         SetValue(value);
     }
 
+    IBuffer ResourceCandidate::DataValueBuffer()
+    {
+        if (ValueType() == ResourceValueType::EmbeddedData)
+        {
+            auto size = HasReplacementValue() ? m_replacementDataValue.size() : m_dataValue.size();
+
+            Buffer buffer { size };
+            CopyMemory(
+                buffer.data(),
+                HasReplacementValue() ? m_replacementDataValue.begin() : m_dataValue.begin(),
+                HasReplacementValue() ? m_replacementDataValue.size() : m_dataValue.size()
+            );
+
+            return buffer;
+        }
+
+        return nullptr;
+    }
+
+    void ResourceCandidate::DataValueBuffer(IBuffer const& value)
+    {
+        SetValue(value);
+    }
+
+    IBuffer ResourceCandidate::DataValueReference()
+    {
+        if (ValueType() == ResourceValueType::EmbeddedData)
+        {
+            return HasReplacementValue() ?
+                make<::MrmLib::BufferView>(m_replacementDataValue.begin(), m_replacementDataValue.size()) :
+                make<::MrmLib::BufferView>(m_dataValue.begin(), m_dataValue.size());
+        }
+
+        return nullptr;
+    }
+
     IVectorView<winrt::MrmLib::Qualifier> ResourceCandidate::Qualifiers()
     {
         return m_qualifiers;
@@ -193,6 +230,12 @@ namespace winrt::MrmLib::implementation
     void ResourceCandidate::SetValue(array_view<uint8_t const> dataValue)
     {
         m_replacementDataValue = { dataValue.begin(), dataValue.end() };
+        m_replacementValueType = ResourceValueType::EmbeddedData;
+    }
+
+    void ResourceCandidate::SetValue(IBuffer const& value)
+    {
+        m_replacementDataValue = { value.data(), value.data() + value.Length() };
         m_replacementValueType = ResourceValueType::EmbeddedData;
     }
 }

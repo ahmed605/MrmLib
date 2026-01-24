@@ -5,7 +5,7 @@
 namespace winrt::MrmLib::implementation
 {
     ReplacePathCandidatesWithEmbeddedDataResult::ReplacePathCandidatesWithEmbeddedDataResult(IVectorView<winrt::MrmLib::ResourceCandidate>&& candidatesReplaced)
-        : m_candidatesReplaced(std::forward<IVectorView<winrt::MrmLib::ResourceCandidate>>(candidatesReplaced))
+        : m_candidatesReplaced(std::move(candidatesReplaced))
     {
 
     }

@@ -9,7 +9,7 @@
     <CsWinRTIncludes>MrmLib</CsWinRTIncludes>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251015.2" />
+    <PackageReference Include="Microsoft.Windows.CsWinRT" Version="2.3.0-prerelease.251115.2" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MrmLib\MrmLib.vcxproj" />

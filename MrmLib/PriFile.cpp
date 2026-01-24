@@ -24,7 +24,7 @@ namespace winrt::MrmLib::implementation
         : m_priFile(priFile)
     {
         if (priBytes.size())
-            m_priFileBytes = std::forward<com_array<uint8_t>>(priBytes);
+            m_priFileBytes = std::move(priBytes);
 
         const mrm::BaseFile* baseFile = nullptr;
         winrt::check_hresult(static_cast<mrm::PriFile*>(m_priFile.get())->GetBaseFile(&baseFile));
@@ -139,7 +139,7 @@ namespace winrt::MrmLib::implementation
         co_return co_await ReplacePathCandidatesWithEmbeddedDataAsync(folder);
     }
 
-    com_array<uint8_t> PriFile::Write()
+    void PriFile::WriteInternal(void (*pCallback)(array_view<uint8_t const>&& priBytes, void* context), void* context)
     {
         mrm::CoreProfile* profile = s_coreProfile.get();
 
@@ -323,16 +323,61 @@ namespace winrt::MrmLib::implementation
         check_hresult(priFileBuilder->GetFileContentsRef(&priFileContents, &priFileContentsSize));
         m_checksum = mapBuilder->GetSchema()->GetVersionInfo()->GetVersionChecksum();
 
-        return { (uint8_t*)priFileContents, (uint8_t*)priFileContents + priFileContentsSize };
+        pCallback({ static_cast<uint8_t const*>(priFileContents), priFileContentsSize }, context);
+    }
+
+    com_array<uint8_t> PriFile::Write()
+    {
+        com_array<uint8_t> priBytes;
+        WriteInternal(
+            [](array_view<uint8_t const>&& priBytesView, void* context)
+            {
+                auto pPriBytes = static_cast<com_array<uint8_t>*>(context);
+                *pPriBytes = { priBytesView.begin(), priBytesView.end() };
+            }, &priBytes);
+
+        return priBytes;
+    }
+
+    IBuffer PriFile::WriteAsBuffer()
+    {
+        IBuffer outBuffer { nullptr };
+        WriteInternal(
+            [](array_view<uint8_t const>&& priBytesView, void* context)
+            {
+                auto size = priBytesView.size();
+
+                Buffer buffer { size };
+                CopyMemory(
+                    buffer.data(),
+                    priBytesView.begin(),
+                    size);
+
+                auto ppBufferABI = static_cast<void**>(context);
+                *ppBufferABI = winrt::detach_abi(buffer);
+            }, winrt::put_abi(outBuffer));
+
+        return outBuffer;
+    }
+
+    winrt::Windows::Foundation::IAsyncOperation<IBuffer> PriFile::WriteAsBufferAsync()
+    {
+        co_await winrt::resume_background();
+        co_return WriteAsBuffer();
     }
 
     winrt::Windows::Foundation::IAsyncAction PriFile::WriteAsync(winrt::Windows::Storage::Streams::IOutputStream destinationStream)
     {
         co_await winrt::resume_background();
 
-        auto bytes = Write();
         DataWriter writer(destinationStream);
-        writer.WriteBytes(bytes);
+        WriteInternal(
+            [](array_view<uint8_t const>&& priBytesView, void* context)
+            {
+                auto pWriter = static_cast<DataWriter*>(context);
+                pWriter->WriteBytes(priBytesView);
+            }, &writer);
+
         co_await writer.StoreAsync();
         co_await destinationStream.FlushAsync();
         writer.Close();
@@ -355,6 +400,32 @@ namespace winrt::MrmLib::implementation
         auto const& folder = co_await StorageFolder::GetFolderFromPathAsync(folder_path);
         auto const& file = co_await folder.CreateFileAsync(std::filesystem::path(file_view).filename().wstring(), CreationCollisionOption::ReplaceExisting);
         co_await WriteAsync(file);
+        co_return;
+    }
+
+    winrt::Windows::Foundation::IAsyncAction PriFile::WriteAsync(IBuffer destinationBuffer)
+    {
+        co_await winrt::resume_background();
+
+        WriteInternal(
+            [](array_view<uint8_t const>&& priBytesView, void* context)
+            {
+                auto pBuffer = static_cast<IBuffer*>(context);
+                auto size = priBytesView.size();
+
+                if (pBuffer->Capacity() < size)
+                {
+                    throw winrt::hresult_invalid_argument(L"Destination buffer is too small to hold the PRI file data.");
+				}
+
+                CopyMemory(
+                    pBuffer->data(),
+                    priBytesView.begin(),
+                    size);
+
+				pBuffer->Length(size);
+            }, &destinationBuffer);
+
         co_return;
     }
 

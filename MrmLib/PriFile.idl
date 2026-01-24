@@ -26,7 +26,7 @@ namespace MrmLib
     {
         UInt16 Major;
         UInt16 Minor;
-	};
+    };
 
     runtimeclass PriFile
     {
@@ -72,11 +72,20 @@ namespace MrmLib
 
             // Version
             PriVersion Version { get; };
-			UInt32 Checksum { get; };
+            UInt32 Checksum { get; };
 
-			// Identifiers
-			String SimpleId { get; set; };
-			String UniqueId { get; set; };
+            // Identifiers
+            String SimpleId { get; set; };
+            String UniqueId { get; set; };
+        }
+
+        [interface_name("IPriFile3", ED6A289B-F609-4972-B2C2-2CD3CC5CCCF6)]
+        {
+			Windows.Storage.Streams.IBuffer WriteAsBuffer();
+            Windows.Foundation.IAsyncOperation<Windows.Storage.Streams.IBuffer> WriteAsBufferAsync();
+
+            [method_name("WriteAsyncWithBuffer")]
+            Windows.Foundation.IAsyncAction WriteAsync(Windows.Storage.Streams.IBuffer destinationBuffer);
         }
     }
 }

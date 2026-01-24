@@ -12,25 +12,27 @@
 #include <MrmEnvironment.h>
 #include <Platform/Base.h>
 #include <readers/MrmReaders.h>
+#include <winrt/Windows.Storage.Streams.h>
 
 #include <namespaces.h>
 
 namespace winrt::MrmLib::implementation
 {
-	using namespace ::winrt::Windows::Foundation::Collections;
+    using namespace ::winrt::Windows::Foundation::Collections;
+    using namespace ::winrt::Windows::Storage::Streams;
 
     struct ResourceCandidate : ResourceCandidateT<ResourceCandidate>
     {
     private:
-		const constexpr static winrt::MrmLib::ResourceValueType NullValueType = static_cast<winrt::MrmLib::ResourceValueType>(-1);
+        const constexpr static winrt::MrmLib::ResourceValueType NullValueType = static_cast<winrt::MrmLib::ResourceValueType>(-1);
 
-		hstring m_resourceName;
+        hstring m_resourceName;
 
         ResourceValueType m_replacementValueType = NullValueType;
-		hstring m_replacementStringValue;
-		com_array<uint8_t> m_replacementDataValue;
+        hstring m_replacementStringValue;
+        com_array<uint8_t> m_replacementDataValue;
 
-		hstring m_stringValue;
+        hstring m_stringValue;
         array_view<uint8_t const> m_dataValue;
         ResourceValueType m_valueType = NullValueType;
 
@@ -38,7 +40,7 @@ namespace winrt::MrmLib::implementation
 
     public:
         mrm::ResourceCandidateResult Candidate;
-		bool HasCustomQualifiers = false;
+        bool HasCustomQualifiers = false;
 
         ResourceCandidate() = default;
         ResourceCandidate(hstring&& resourceName, mrm::ResourceCandidateResult&& candidate, mrm::AtomPoolGroup* pPoolGroup);
@@ -64,22 +66,28 @@ namespace winrt::MrmLib::implementation
         com_array<uint8_t> DataValue();
         void DataValue(array_view<uint8_t const> value);
 
+        IBuffer DataValueBuffer();
+        void DataValueBuffer(IBuffer const& value);
+
+        IBuffer DataValueReference();
+
         IVectorView<winrt::MrmLib::Qualifier> Qualifiers();
         void Qualifiers(winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& value);
 
         void SetValue(hstring const& value);
         void SetValue(winrt::MrmLib::ResourceValueType const& valueType, hstring const& value);
         void SetValue(array_view<uint8_t const> value);
+        void SetValue(IBuffer const& value);
 
         inline bool HasReplacementValue() const
         {
             return m_replacementValueType != NullValueType;
-		}
+        }
 
         inline ResourceValueType GetReplacementValueType() const
         {
             return m_replacementValueType;
-		}
+        }
 
         inline com_array<uint8_t>* GetReplacementDataValueRef()
         {
