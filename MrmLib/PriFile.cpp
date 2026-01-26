@@ -90,6 +90,11 @@ namespace winrt::MrmLib::implementation
         co_return co_await LoadAsync({ buffer.data(), buffer.Length() });
     }
 
+    winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> PriFile::LoadAsync(IBuffer priBytesBuffer)
+    {
+        co_return co_await LoadAsync({ priBytesBuffer.data(), priBytesBuffer.Length() });
+    }
+
     winrt::Windows::Foundation::Collections::IVector<winrt::MrmLib::ResourceCandidate> PriFile::ResourceCandidates()
     {
         return m_resourceCandidates;

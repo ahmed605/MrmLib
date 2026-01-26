@@ -33,6 +33,7 @@ namespace MrmLib
         [static_name("IPriFileStatics", CE68A109-67EE-4B84-8823-32413732A4F3)]
         {
             [default_overload]
+            [method_name("LoadAsyncWithBytesArray")]
             static Windows.Foundation.IAsyncOperation<PriFile> LoadAsync(UInt8[] priBytes);
 
             [method_name("LoadAsyncWithPath")]
@@ -40,6 +41,12 @@ namespace MrmLib
 
             [method_name("LoadAsyncWithStorageFile")]
             static Windows.Foundation.IAsyncOperation<PriFile> LoadAsync(Windows.Storage.StorageFile priFile);
+        }
+
+        [static_name("IPriFileStatics2", EFDC656C-A9A0-465C-8E19-491A94A9A79E)]
+        {
+            [method_name("LoadAsyncWithBuffer")]
+            static Windows.Foundation.IAsyncOperation<PriFile> LoadAsync(Windows.Storage.Streams.IBuffer priBytesBuffer);
         }
 
         [interface_name("IPriFile", B2C08FB5-B44A-4A5D-83C0-EF07945C9CAC)]
@@ -81,7 +88,7 @@ namespace MrmLib
 
         [interface_name("IPriFile3", ED6A289B-F609-4972-B2C2-2CD3CC5CCCF6)]
         {
-			Windows.Storage.Streams.IBuffer WriteAsBuffer();
+            Windows.Storage.Streams.IBuffer WriteAsBuffer();
             Windows.Foundation.IAsyncOperation<Windows.Storage.Streams.IBuffer> WriteAsBufferAsync();
 
             [method_name("WriteAsyncWithBuffer")]

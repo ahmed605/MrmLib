@@ -39,6 +39,7 @@ namespace winrt::MrmLib::implementation
         static winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> LoadAsync(array_view<uint8_t const> priBytes);
         static winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> LoadAsync(hstring priFilePath);
         static winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> LoadAsync(winrt::Windows::Storage::StorageFile priFile);
+        static winrt::Windows::Foundation::IAsyncOperation<winrt::MrmLib::PriFile> LoadAsync(winrt::Windows::Storage::Streams::IBuffer priBytesBuffer);
 
         winrt::Windows::Foundation::Collections::IVector<winrt::MrmLib::ResourceCandidate> ResourceCandidates();
 

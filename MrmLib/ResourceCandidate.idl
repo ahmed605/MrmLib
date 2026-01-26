@@ -23,6 +23,21 @@ namespace MrmLib
             static ResourceCandidate Create(String resourceName, UInt8[] dataValue, Qualifier[] qualifiers);
         }
 
+        [static_name("IResourceCandidateStatics2", 546EA32E-5BA2-4A06-8733-BDE1511A39D7)]
+        {
+            [method_name("CreateResourceCandidateWithQualifiersView")]
+            static ResourceCandidate Create(String resourceName, ResourceValueType valueType, String stringValue, IVectorView<Qualifier> qualifiers);
+            [default_overload]
+            [method_name("CreateDataResourceCandidateWithQualifiersView")]
+            static ResourceCandidate Create(String resourceName, UInt8[] dataValue, IVectorView<Qualifier> qualifiers);
+            [method_name("CreateDataBufferResourceCandidate")]
+            static ResourceCandidate Create(String resourceName, Windows.Storage.Streams.IBuffer dataValue);
+            [method_name("CreateDataBufferResourceCandidateWithQualifiers")]
+            static ResourceCandidate Create(String resourceName, Windows.Storage.Streams.IBuffer dataValue, Qualifier[] qualifiers);
+            [method_name("CreateDataBufferResourceCandidateWithQualifiersView")]
+            static ResourceCandidate Create(String resourceName, Windows.Storage.Streams.IBuffer dataValue, IVectorView<Qualifier> qualifiers);
+        }
+
         [interface_name("IResourceCandidate", 0E1518AA-11DC-4B4D-B9BD-0950F7E6CF77)]
         {
             String ResourceName { get; set; };

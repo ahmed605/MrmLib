@@ -51,6 +51,11 @@ namespace winrt::MrmLib::implementation
         static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue, array_view<winrt::MrmLib::Qualifier const> qualifiers);
         static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, array_view<uint8_t const> dataValue);
         static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, array_view<uint8_t const> dataValue, array_view<winrt::MrmLib::Qualifier const> qualifiers);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue, winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& qualifiers);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, array_view<uint8_t const> dataValue, winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& qualifiers);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, winrt::Windows::Storage::Streams::IBuffer const& dataValue);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, winrt::Windows::Storage::Streams::IBuffer const& dataValue, array_view<winrt::MrmLib::Qualifier const> qualifiers);
+        static winrt::MrmLib::ResourceCandidate Create(hstring const& resourceName, winrt::Windows::Storage::Streams::IBuffer const& dataValue, winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& qualifiers);
 
         hstring ResourceName();
         void ResourceName(hstring const& value);

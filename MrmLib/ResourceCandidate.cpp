@@ -94,6 +94,34 @@ namespace winrt::MrmLib::implementation
         return winrt::make<implementation::ResourceCandidate>(resourceName, dataValue, single_threaded_vector(std::move(std::vector<MrmLib::Qualifier>(qualifiers.begin(), qualifiers.end()))).GetView());
     }
 
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::MrmLib::ResourceValueType const& valueType, hstring const& stringValue, winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& qualifiers)
+    {
+        return winrt::make<implementation::ResourceCandidate>(resourceName, valueType, stringValue, qualifiers);
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, array_view<uint8_t const> dataValue, winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& qualifiers)
+    {
+        return winrt::make<implementation::ResourceCandidate>(resourceName, dataValue, qualifiers);
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::Windows::Storage::Streams::IBuffer const& dataValue)
+    {
+        auto array = array_view<uint8_t const> { dataValue.data(), dataValue.Length() };
+        return winrt::make<implementation::ResourceCandidate>(resourceName, array, nullptr);
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::Windows::Storage::Streams::IBuffer const& dataValue, array_view<winrt::MrmLib::Qualifier const> qualifiers)
+    {
+        auto array = array_view<uint8_t const> { dataValue.data(), dataValue.Length() };
+        return winrt::make<implementation::ResourceCandidate>(resourceName, array, single_threaded_vector(std::move(std::vector<MrmLib::Qualifier>(qualifiers.begin(), qualifiers.end()))).GetView());
+    }
+
+    winrt::MrmLib::ResourceCandidate ResourceCandidate::Create(hstring const& resourceName, winrt::Windows::Storage::Streams::IBuffer const& dataValue, winrt::Windows::Foundation::Collections::IVectorView<winrt::MrmLib::Qualifier> const& qualifiers)
+    {
+        auto array = array_view<uint8_t const> { dataValue.data(), dataValue.Length() };
+        return winrt::make<implementation::ResourceCandidate>(resourceName, array, qualifiers);
+    }
+
     hstring ResourceCandidate::ResourceName()
     {
         return m_resourceName;
