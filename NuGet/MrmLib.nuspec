@@ -2,7 +2,7 @@
 <package>
   <metadata>
     <id>MrmLib</id>
-    <version>1.0.6</version>
+    <version>1.1.0</version>
     <title>MrmLib</title>
     <authors>Ahmed605</authors>
     <owners>Ahmed605,Ahmed Walid</owners>
@@ -12,7 +12,7 @@
     <projectUrl>https://github.com/ahmed605/MrmLib</projectUrl>
     <repository type="git" url="https://github.com/ahmed605/MrmLib.git"/>
     <description>WinRT Component library for working with PRI files, it can be used to read and modify resources in PRI files.</description>
-    <releaseNotes>Added IBuffer overloads.</releaseNotes>
+    <releaseNotes>Improved IBuffer overloads.</releaseNotes>
     <tags>MrmLib MRM MRT MRTCore PRI Resources XAML WinRT UWP Universal Windows Platform UAP WinUI</tags>
     <readme>docs\README.md</readme>
     <dependencies>
@@ -37,8 +37,12 @@
       <file target="lib\net9.0-windows10.0.26100.0\MrmLib.Projection.dll" src="..\MrmLib.Projection\bin\Release\net9.0-windows10.0.26100.0\MrmLib.Projection.dll" />
 
       <file target="runtimes\win-x86\native\MrmLib.dll"                   src="..\Release\MrmLib\MrmLib.dll" />
+      <file target="runtimes\win-x86\native\MrmLib.pdb"                   src="..\Release\MrmLib\MrmLib.pdb" />
       <file target="runtimes\win-x64\native\MrmLib.dll"                   src="..\x64\Release\MrmLib\MrmLib.dll" />
+      <file target="runtimes\win-x64\native\MrmLib.pdb"                   src="..\x64\Release\MrmLib\MrmLib.pdb" />
       <file target="runtimes\win-arm\native\MrmLib.dll"                   src="..\ARM\Release\MrmLib\MrmLib.dll" />
+      <file target="runtimes\win-arm\native\MrmLib.pdb"                   src="..\ARM\Release\MrmLib\MrmLib.pdb" />
       <file target="runtimes\win-arm64\native\MrmLib.dll"                 src="..\ARM64\Release\MrmLib\MrmLib.dll" />
+      <file target="runtimes\win-arm64\native\MrmLib.pdb"                 src="..\ARM64\Release\MrmLib\MrmLib.pdb" />
   </files>
 </package>

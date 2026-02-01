@@ -358,6 +358,8 @@ namespace winrt::MrmLib::implementation
                     priBytesView.begin(),
                     size);
 
+                buffer.Length(size);
+
                 auto ppBufferABI = static_cast<void**>(context);
                 *ppBufferABI = winrt::detach_abi(buffer);
             }, winrt::put_abi(outBuffer));

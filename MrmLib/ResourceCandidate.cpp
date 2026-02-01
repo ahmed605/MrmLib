@@ -208,6 +208,8 @@ namespace winrt::MrmLib::implementation
                 HasReplacementValue() ? m_replacementDataValue.size() : m_dataValue.size()
             );
 
+			buffer.Length(size);
+
             return buffer;
         }
 

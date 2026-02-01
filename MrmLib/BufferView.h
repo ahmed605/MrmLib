@@ -13,7 +13,6 @@ namespace MrmLib
     struct BufferView : ::winrt::implements<BufferView,
                                             ::winrt::Windows::Storage::Streams::IBuffer,
                                             ::Windows::Storage::Streams::IBufferByteAccess,
-                                            ::winrt::Windows::Foundation::IClosable,
                                             IMarshal>
     {
     private:
@@ -36,14 +35,6 @@ namespace MrmLib
         BufferView(const uint8_t* data, size_t capacity)
             : data_(data),
               capacity_(capacity)
-        {
-        }
-
-        ~BufferView() noexcept
-        {
-        }
-
-        void Close() noexcept
         {
         }
 
@@ -144,6 +135,7 @@ namespace MrmLib
 
         ~BufferOverArray() noexcept
         {
+			Close();
         }
 
         void Close() noexcept
