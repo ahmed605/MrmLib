@@ -8,6 +8,14 @@
 
 [![MrmLib](https://img.shields.io/nuget/v/MrmLib?style=for-the-badge&label=MrmLib&color=blue&link=https%3A%2F%2Fwww.nuget.org%2Fpackages%2FMrmLib%2F)](https://www.nuget.org/packages/MrmLib/)
 
+## Symbols
+
+Starting with `v1.1.0`, you can use the following URL as a symbols server:
+
+```
+https://ahmedwalid.visualstudio.com/2de6547b-9518-4697-aeba-05ac9f37924f/_apis/git/repositories/8aa608fb-1a38-48c9-a0ed-54b0de5f5886/items?path=/symbols
+```
+
 ## Usage
 
 ### Loading a PRI file
